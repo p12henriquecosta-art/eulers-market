@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Persistence } from '../utils/persistence';
 
 const FormWrapper = styled(motion.div)`
   max-width: 550px;
@@ -57,8 +58,13 @@ const Confetti = styled(motion.div)`
 `;
 
 export const WaitlistForm: React.FC = () => {
-  const [email, setEmail] = React.useState('');
+  const [email, setEmail] = React.useState(Persistence.load('waitlist_email_draft') || '');
   const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  // Persist email draft as user types
+  React.useEffect(() => {
+    Persistence.save('waitlist_email_draft', email);
+  }, [email]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,11 +73,27 @@ export const WaitlistForm: React.FC = () => {
     setStatus('loading');
     
     try {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const scriptUrl = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
+      
+      if (!scriptUrl || scriptUrl.includes('YOUR_GOOGLE')) {
+        console.warn('Euler Market Security: Secure Mock Implementation triggered - Missing VITE_GOOGLE_SCRIPT_URL');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      } else {
+        // Real submission logic
+        await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, timestamp: new Date().toISOString() })
+        });
+      }
+
       setStatus('success');
       setEmail('');
-    } catch {
+      Persistence.remove('waitlist_email_draft');
+      Persistence.save('waitlist_session', { status: 'success', timestamp: Date.now() });
+    } catch (error) {
+      console.error('Waitlist submission failed:', error);
       setStatus('error');
     }
   };
