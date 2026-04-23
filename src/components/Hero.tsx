@@ -7,31 +7,51 @@ const HeroWrapper = styled.section`
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1rem 2rem 3rem;
-  overflow: hidden;
+  padding: 8rem 1rem 4rem;
   width: 100%;
 `;
 
+const Badge = styled(motion.div)`
+  padding: 0.5rem 1.25rem;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 2.5rem;
+`;
+
 const Title = styled(motion.h2)`
-  font-size: 3.5rem;
-  line-height: 1.1;
+  font-size: 6rem;
+  line-height: 0.95;
   margin: 0;
-  max-width: 800px;
-  background: linear-gradient(to right, #fff, rgba(255,255,255,0.7));
+  max-width: 1100px;
+  background: linear-gradient(to bottom, #fff 30%, rgba(255,255,255,0.4) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.05em;
 
   @media (max-width: 768px) {
-    font-size: 2.5rem;
+    font-size: 3.5rem;
   }
 `;
 
 const SubTitle = styled(motion.p)`
-  font-size: 1.25rem;
-  color: #94a3b8;
-  margin-top: 1.5rem;
-  max-width: 600px;
-  line-height: 1.6;
+  font-size: 1.6rem;
+  color: var(--color-text-dim);
+  margin-top: 2.5rem;
+  max-width: 750px;
+  line-height: 1.4;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+  }
 `;
 
 const scroll = keyframes`
@@ -40,23 +60,22 @@ const scroll = keyframes`
 `;
 
 const TickerContainer = styled(motion.div)`
-  margin-top: 3rem;
+  margin-top: 6rem;
   width: 100vw;
   max-width: 100%;
   overflow: hidden;
   position: relative;
   display: flex;
-  opacity: 0.6;
   
   /* Fade edges */
-  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
 `;
 
 const TickerTrack = styled.div`
   display: flex;
   width: max-content;
-  animation: ${scroll} 30s linear infinite;
+  animation: ${scroll} 50s linear infinite;
   
   &:hover {
     animation-play-state: paused;
@@ -66,47 +85,68 @@ const TickerTrack = styled.div`
 const ModelItem = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1.5rem;
+  gap: 0.75rem;
+  padding: 0.85rem 3rem;
   font-size: 0.85rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #94a3b8;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.4);
   white-space: nowrap;
+  background: rgba(255, 255, 255, 0.02);
+  margin: 0 0.75rem;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--glass-border);
+    transform: scale(1.05);
+  }
 
   span {
     color: var(--color-primary);
+    font-size: 1.2rem;
   }
 `;
 
 const models = [
   "ChatGPT Plus", "Claude Pro", "Gemini Advanced", 
   "Midjourney", "Perplexity Pro", "GitHub Copilot",
-  "Poe Subscription", "RunwayML Gen-2"
+  "Poe Premium", "RunwayML Gen-3", "Luma Dream Machine",
+  "ElevenLabs", "Mistral Large", "Groq"
 ];
 
 export const Hero: React.FC = () => (
   <HeroWrapper>
-    <Title
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+    <Badge
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.8 }}
     >
-      Exchange your AI subscriptions. Effortlessly.
+      Join 5,000+ early adopters
+    </Badge>
+    <Title
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
+    >
+      The Secondary Market <br /> for AI Intelligence.
     </Title>
     <SubTitle
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1, delay: 0.4 }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
     >
-      The secondary market for ChatGPT, Claude, and Gemini seats. 
-      Save money or recoup your unused subscription value.
+      Unlock premium AI at a fraction of the cost. Peer-to-peer subscription seat exchange, secured by Euler's Market.
     </SubTitle>
     
     <TickerContainer
       initial={{ opacity: 0 }}
-      animate={{ opacity: 0.6 }}
-      transition={{ delay: 0.8 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.6, duration: 1 }}
     >
       <TickerTrack>
         {[...models, ...models].map((model, idx) => (

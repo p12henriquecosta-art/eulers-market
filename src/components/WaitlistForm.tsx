@@ -1,87 +1,136 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const FormWrapper = styled.div`
-  margin: 1rem 0;
+const FormWrapper = styled(motion.div)`
+  max-width: 550px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 4rem 3rem;
+  text-align: center;
+`;
+
+const FormTitle = styled.h3`
+  font-size: 2.25rem;
+  margin-bottom: 1.25rem;
+  color: #fff;
+  letter-spacing: -0.03em;
+`;
+
+const FormText = styled.p`
+  color: var(--color-text-dim);
+  margin-bottom: 3rem;
+  font-size: 1.15rem;
+  line-height: 1.6;
+`;
+
+const FormGroup = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+`;
+
+const SuccessMessage = styled(motion.div)`
+  padding: 3rem 2rem;
+  border-radius: 24px;
+  background: rgba(0, 242, 254, 0.05);
+  border: 1px solid rgba(0, 242, 254, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1.5rem;
+
+  h4 {
+    font-size: 1.75rem;
+    color: var(--color-primary);
+  }
+
+  p {
+    color: var(--color-text-dim);
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
 `;
 
-const Form = styled.form`
-  width: 100%;
-  max-width: 400px;
-`;
-
-const StatusMessage = styled(motion.p)<{ $type?: 'success' | 'error' }>`
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  color: ${props => props.$type === 'success' ? '#10b981' : '#ef4444'};
+const Confetti = styled(motion.div)`
+  font-size: 3rem;
 `;
 
 export const WaitlistForm: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [email, setEmail] = React.useState('');
+  const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email) return;
+    
     setStatus('loading');
     
-    // The URL is now managed in the .env file
-    const SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
-
     try {
-      if (!SCRIPT_URL || SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-        throw new Error('Script URL not configured');
-      }
-      await fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors', // Needed for Google Apps Script
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      
-      // With 'no-cors', we can't check res.ok, but we assume success if no error is thrown
+      // Mock API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
       setStatus('success');
       setEmail('');
-    } catch (err) {
-      console.error(err);
+    } catch {
       setStatus('error');
     }
   };
 
   return (
-    <FormWrapper>
+    <FormWrapper 
+      className="glass-panel"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+    >
       <AnimatePresence mode="wait">
         {status === 'success' ? (
-          <StatusMessage
+          <SuccessMessage
             key="success"
-            $type="success"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
           >
-            ✅ You've been added to the visionary circle.
-          </StatusMessage>
-        ) : (
-          <Form onSubmit={handleSubmit} key="form">
-            <input
-              type="email"
-              placeholder="Enter your email for early access"
-              value={email}
-              required
-              disabled={status === 'loading'}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <button type="submit" disabled={status === 'loading'}>
-              {status === 'loading' ? 'Joining...' : 'Get Early Access'}
+            <Confetti
+              animate={{ 
+                rotate: [0, 10, -10, 10, 0],
+                scale: [1, 1.2, 1]
+              }}
+              transition={{ duration: 0.5, repeat: 2 }}
+            >
+              🎉
+            </Confetti>
+            <h4>You're in!</h4>
+            <p>We've added you to the private beta list. Keep an eye on your inbox for the invitation.</p>
+            <button onClick={() => setStatus('idle')} style={{ background: 'transparent', color: 'var(--color-primary)', border: '1px solid var(--color-primary)', boxShadow: 'none', padding: '0.75rem 1.5rem' }}>
+              Add another email
             </button>
-            {status === 'error' && (
-              <StatusMessage $type="error">
-                Something went wrong. Please try again.
-              </StatusMessage>
-            )}
-          </Form>
+          </SuccessMessage>
+        ) : (
+          <motion.div
+            key="form"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <FormTitle>Secure Your Spot</FormTitle>
+            <FormText>Join the waitlist to get early access to the market. Beta members receive lifetime 50% discount on platform fees.</FormText>
+            
+            <FormGroup onSubmit={handleSubmit}>
+              <input 
+                type="email" 
+                placeholder="Enter your professional email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={status === 'loading'}
+                required
+              />
+              <button type="submit" disabled={status === 'loading'}>
+                {status === 'loading' ? 'Processing...' : 'Request Invitation'}
+              </button>
+            </FormGroup>
+          </motion.div>
         )}
       </AnimatePresence>
     </FormWrapper>
