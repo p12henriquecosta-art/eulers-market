@@ -6,12 +6,23 @@ import { Footer } from './components/Footer';
 import './styles/global.css';
 
 export const App: React.FC = () => (
-  <div className="card">
+  <>
     <Header />
-    <Hero />
-    <WaitlistForm />
+    <main>
+      <section className="section">
+        <div className="container">
+          <Hero />
+        </div>
+      </section>
+      
+      <section className="section" id="waitlist">
+        <div className="container">
+          <WaitlistForm />
+        </div>
+      </section>
+    </main>
     <Footer />
-  </div>
+  </>
 );
 
 export default App;

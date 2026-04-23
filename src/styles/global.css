@@ -1,52 +1,52 @@
 /* src/styles/global.css */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Inter:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;700&display=swap');
 
 :root {
-  --color-bg: #05070a;
-  --color-surface: rgba(17, 25, 40, 0.75);
+  --color-bg: #020408;
+  --color-surface: rgba(13, 17, 23, 0.7);
   --color-primary: #00f2fe;
   --color-secondary: #4facfe;
-  --color-text: #f8fafc;
   --color-accent: #ff0080;
+  --color-text: #ffffff;
+  --color-text-dim: #94a3b8;
   --font-heading: 'Outfit', sans-serif;
   --font-body: 'Inter', sans-serif;
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   background-color: var(--color-bg);
-  background-image: 
-    radial-gradient(at 0% 0%, hsla(190, 100%, 50%, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(280, 100%, 50%, 0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, hsla(200, 100%, 50%, 0.15) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, hsla(160, 100%, 50%, 0.1) 0px, transparent 50%);
   color: var(--color-text);
   margin: 0;
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow-x: hidden;
+  
+  /* Modern Dynamic Background */
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(0, 242, 254, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(255, 0, 128, 0.1) 0%, transparent 40%);
 }
 
-.card {
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background-color: var(--color-surface);
+.glass-panel {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  padding: 3rem;
-  max-width: 500px;
-  width: 90%;
-  margin: 2rem;
-  text-align: center;
 }
 
 h1, h2, h3 {
   font-family: var(--font-heading);
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 0;
 }
 
 button {
@@ -54,40 +54,48 @@ button {
   color: #000;
   font-weight: 600;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 1rem 2rem;
   cursor: pointer;
   font-size: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 15px -3px rgba(79, 172, 254, 0.3);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 8px 20px -4px rgba(0, 242, 254, 0.4);
 }
 
 button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 20px 25px -5px rgba(79, 172, 254, 0.4);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 15px 30px -5px rgba(0, 242, 254, 0.5);
   filter: brightness(1.1);
 }
 
 button:active {
-  transform: translateY(0);
+  transform: translateY(-2px) scale(0.98);
 }
 
 input {
-  padding: 1rem 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  padding: 1.1rem 1.5rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.05);
   color: var(--color-text);
   width: 100%;
-  margin-bottom: 1.5rem;
   font-size: 1rem;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
+  transition: all 0.3s ease;
+  outline: none;
 }
 
 input:focus {
-  outline: none;
   border-color: var(--color-primary);
   background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.1);
+  box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.15);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.section {
+  padding: 6rem 0;
 }
