@@ -16,7 +16,6 @@ const HeaderWrapper = styled.header`
   background: rgba(2, 4, 8, 0.7);
   border-bottom: 1px solid var(--glass-border);
 `;
-
 const Title = styled.h1`
   font-family: var(--font-heading);
   font-size: 1.5rem;
@@ -28,8 +27,32 @@ const Title = styled.h1`
   letter-spacing: -0.02em;
 `;
 
+
+const NavButton = styled.button`
+  padding: 0.6rem 1.25rem;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 20px -4px rgba(0, 242, 254, 0.3);
+  
+  @media (max-width: 480px) {
+    display: none;
+  }
+`;
+
+const NavContainer = styled.div`
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 export const Header: React.FC = () => (
   <HeaderWrapper>
-    <Title>Euler's Market</Title>
+    <NavContainer>
+      <Title>Euler's Market</Title>
+      <NavButton onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}>
+        Request Access
+      </NavButton>
+    </NavContainer>
   </HeaderWrapper>
 );

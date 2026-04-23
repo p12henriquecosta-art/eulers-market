@@ -25,20 +25,25 @@ const Badge = styled(motion.div)`
 `;
 
 const Title = styled(motion.h2)`
-  font-size: 6rem;
-  line-height: 0.95;
+  font-size: 7.5rem;
+  line-height: 0.9;
   margin: 0;
-  max-width: 1100px;
-  background: linear-gradient(to bottom, #fff 30%, rgba(255,255,255,0.4) 100%);
+  max-width: 1200px;
+  background: linear-gradient(135deg, #fff 0%, #fff 40%, rgba(255,255,255,0.4) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.06em;
+
+  @media (max-width: 1200px) {
+    font-size: 6rem;
+  }
 
   @media (max-width: 768px) {
     font-size: 3.5rem;
   }
 `;
+
 
 const SubTitle = styled(motion.p)`
   font-size: 1.6rem;
@@ -126,22 +131,35 @@ export const Hero: React.FC = () => (
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8 }}
     >
-      Join 5,000+ early adopters
+      ✦ Launching Private Beta
     </Badge>
     <Title
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
     >
-      The Secondary Market <br /> for AI Intelligence.
+      Exchange AI Intelligence <br /> 
+      <span style={{ color: 'var(--color-primary)', display: 'block', marginTop: '0.5rem' }}>Without Limits.</span>
     </Title>
     <SubTitle
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
     >
-      Unlock premium AI at a fraction of the cost. Peer-to-peer subscription seat exchange, secured by Euler's Market.
+      The world's first secondary market for premium AI subscription seats. 
+      Save 60%+ on the tools you use every day, secured by the Euler Protocol.
     </SubTitle>
+    
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.4, duration: 0.8 }}
+      style={{ marginTop: '3rem' }}
+    >
+      <button onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}>
+        Secure Early Access
+      </button>
+    </motion.div>
     
     <TickerContainer
       initial={{ opacity: 0 }}
