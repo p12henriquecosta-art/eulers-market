@@ -70,7 +70,7 @@ const ButtonDestructive = styled.button`
 `;
 
 export const Portal: React.FC = () => {
-  const [accessKey, setAccessKey] = useState('EULR-XXXXXXXX-XXXX');
+  const [accessKey] = useState('EULR-XXXXXXXX-XXXX');
 
   const handleLogout = async () => {
     await signOut(auth);
