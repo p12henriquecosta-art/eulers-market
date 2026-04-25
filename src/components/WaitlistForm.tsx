@@ -1,9 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Persistence } from '../utils/persistence';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 
 const FormWrapper = styled(motion.div)`
   max-width: 550px;
@@ -60,6 +61,7 @@ const Confetti = styled(motion.div)`
 `;
 
 export const WaitlistForm: React.FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = React.useState(Persistence.load('waitlist_email_draft') || '');
   const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
@@ -72,6 +74,11 @@ export const WaitlistForm: React.FC = () => {
     e.preventDefault();
     if (!email) return;
     
+    if (!auth.currentUser) {
+      navigate('/signup');
+      return;
+    }
+
     setStatus('loading');
     
     try {
