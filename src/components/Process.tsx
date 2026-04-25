@@ -126,20 +126,6 @@ const StepDescription = styled.p`
   line-height: 1.65;
 `;
 
-// ─── Connector (desktop) ──────────────────────────────────────────────────────
-const ConnectorRow = styled.div`
-  display: none;
-
-  @media (min-width: 968px) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    margin-bottom: -1rem;
-    padding: 0 2rem;
-    height: 24px;
-  }
-`;
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const steps = [
