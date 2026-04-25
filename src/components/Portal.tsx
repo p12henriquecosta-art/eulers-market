@@ -321,11 +321,7 @@ const PLANS = [
   },
 ];
 
-const PURCHASE_HISTORY = [
-  { date: '2025-04-01', product: 'Early Access · Claude AI', amount: '€9.99', status: 'Completed' },
-  { date: '2025-03-01', product: 'Early Access · Claude AI', amount: '€9.99', status: 'Completed' },
-  { date: '2025-02-10', product: 'Early Access', amount: '€0.00', status: 'Completed' },
-];
+const PURCHASE_HISTORY: { date: string; product: string; amount: string; status: string }[] = [];
 
 const USAGE_DATA = [
   { label: 'GPT-4o', pct: 72, color: 'linear-gradient(to top, #00F2FE, #4FACFE)' },
@@ -338,11 +334,7 @@ const USAGE_DATA = [
   { label: 'Week −1', pct: 80, color: 'rgba(255,255,255,0.08)' },
 ];
 
-const INVOICES = [
-  { date: 'Apr 1, 2025', label: 'INV-2025-004 · Claude AI' },
-  { date: 'Mar 1, 2025', label: 'INV-2025-003 · Claude AI' },
-  { date: 'Feb 10, 2025', label: 'INV-2025-002 · Early Access' },
-];
+const INVOICES: { date: string; label: string }[] = [];
 
 // ─── Component ────────────────────────────────────────────────────────────────────
 const cardAnim = {
@@ -454,38 +446,49 @@ export const Portal: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {PURCHASE_HISTORY.map((row, i) => (
-                  <tr key={i}>
-                    <Td>{row.date}</Td>
-                    <Td style={{ color: 'var(--color-text)' }}>{row.product}</Td>
-                    <Td>{row.amount}</Td>
-                    <Td>
-                      <StatusPill $status={row.status}>{row.status}</StatusPill>
+                {PURCHASE_HISTORY.length === 0 ? (
+                  <tr>
+                    <Td colSpan={4} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>
+                      No purchases yet. Subscribe to a plan above to get started.
                     </Td>
                   </tr>
-                ))}
+                ) : (
+                  PURCHASE_HISTORY.map((row, i) => (
+                    <tr key={i}>
+                      <Td>{row.date}</Td>
+                      <Td style={{ color: 'var(--color-text)' }}>{row.product}</Td>
+                      <Td>{row.amount}</Td>
+                      <Td>
+                        <StatusPill $status={row.status}>{row.status}</StatusPill>
+                      </Td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </Table>
           </Card>
 
           <Card {...cardAnim} transition={{ duration: 0.4, delay: 0.1 }}>
             <SectionLabel>Billing &amp; Invoices</SectionLabel>
-            {INVOICES.map((inv, i) => (
-              <InvoiceRow key={i}>
-                <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>{inv.date}</span>
-                <span style={{ color: 'var(--color-text-dim)' }}>{inv.label}</span>
-                <a
-                  href="#"
-                  onClick={e => e.preventDefault()}
-                  style={{ color: 'var(--color-primary)', fontSize: '0.82rem', textDecoration: 'none', flexShrink: 0 }}
-                >
-                  ↓ PDF
-                </a>
-              </InvoiceRow>
-            ))}
-            <p style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>
-              Invoices are generated automatically 24h after each successful payment.
-            </p>
+            {INVOICES.length === 0 ? (
+              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', padding: '1.5rem 0', textAlign: 'center' }}>
+                No invoices yet. Invoices are generated automatically 24h after each successful payment.
+              </p>
+            ) : (
+              INVOICES.map((inv, i) => (
+                <InvoiceRow key={i}>
+                  <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>{inv.date}</span>
+                  <span style={{ color: 'var(--color-text-dim)' }}>{inv.label}</span>
+                  <a
+                    href="#"
+                    onClick={e => e.preventDefault()}
+                    style={{ color: 'var(--color-primary)', fontSize: '0.82rem', textDecoration: 'none', flexShrink: 0 }}
+                  >
+                    ↓ PDF
+                  </a>
+                </InvoiceRow>
+              ))
+            )}
           </Card>
         </TwoCol>
 
@@ -494,25 +497,27 @@ export const Portal: React.FC = () => {
           <Card {...cardAnim} transition={{ duration: 0.4, delay: 0.15 }}>
             <SectionLabel>API Usage · Per Scribe</SectionLabel>
             <SectionTitle>Monthly call distribution by provider</SectionTitle>
-            <p style={{ color: 'var(--color-text-dim)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-              Mock data — live telemetry streams once your first scribe is initialised.
+            <div style={{ opacity: 0.25, pointerEvents: 'none', userSelect: 'none' }}>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                {USAGE_DATA.map((bar, i) => (
+                  <ChartBar key={i} $h={bar.pct}>
+                    <BarFill $pct={bar.pct} $color={bar.color} />
+                    <BarLabel>{bar.label}</BarLabel>
+                  </ChartBar>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                {USAGE_DATA.slice(0, 4).map((bar, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
+                    <span style={{ width: 10, height: 10, borderRadius: 2, background: bar.color, display: 'inline-block', flexShrink: 0 }} />
+                    {bar.label} · {bar.pct}%
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '1rem' }}>
+              Telemetry activates once your first scribe is initialised.
             </p>
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-              {USAGE_DATA.map((bar, i) => (
-                <ChartBar key={i} $h={bar.pct}>
-                  <BarFill $pct={bar.pct} $color={bar.color} />
-                  <BarLabel>{bar.label}</BarLabel>
-                </ChartBar>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-              {USAGE_DATA.slice(0, 4).map((bar, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-                  <span style={{ width: 10, height: 10, borderRadius: 2, background: bar.color, display: 'inline-block', flexShrink: 0 }} />
-                  {bar.label} · {bar.pct}%
-                </div>
-              ))}
-            </div>
           </Card>
         </FullRow>
       </PortalWrapper>
