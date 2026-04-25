@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    // Bootstrap Admin check
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'leonardeuler@euler.life' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Entity Validations ---
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'role']) &&
+             data.uid is string && data.uid.size() <= 128 &&
+             data.email is string && data.email.size() <= 128 &&
+             data.role in ['admin', 'user'] &&
+             (!('isVerified' in data) || data.isVerified is bool) &&
+             (!('twoFactorEnabled' in data) || data.twoFactorEnabled is bool);
+    }
+
+    function isValidWaitingListEntry(data) {
+      return data.keys().hasAll(['email', 'name', 'status', 'createdAt']) &&
+             data.email is string && data.email.size() <= 128 &&
+             data.name is string && data.name.size() <= 128 &&
+             data.status in ['pending', 'invited', 'joined'] &&
+             data.createdAt == request.time;
+    }
+
+    // --- Collection Rules ---
+
+    // USERS
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(incoming()) && incoming().role == 'user';
+      allow update: if (isOwner(userId) || isAdmin()) && 
+                    isValidUser(incoming()) && 
+                    (
+                      // User can update profile but NOT role
+                      (isOwner(userId) && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'twoFactorEnabled', 'isVerified'])) ||
+                      // Admin can update anything
+                      isAdmin()
+                    );
+    }
+
+    // WAITING LIST
+    match /waiting_list/{entryId} {
+      allow list: if isAdmin();
+      allow get: if isAdmin();
+      allow create: if isValidWaitingListEntry(incoming()) && 
+                    incoming().status == 'pending'; // Everyone starts as pending
+      allow update: if isAdmin() && 
+                    isValidWaitingListEntry(incoming()) &&
+                    incoming().diff(existing()).affectedKeys().hasOnly(['status']);
+      allow delete: if isAdmin();
+    }
+
+    // ANALYTICS
+    match /analytics/overview {
+      allow get: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // TEST CONNECTION DOC
+    match /test/connection {
+      allow get: if true;
+    }
+  }
+}

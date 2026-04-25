@@ -1,0 +1,57 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user with role-based access control.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "isVerified": { "type": "boolean" },
+        "twoFactorEnabled": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "WaitingListEntry": {
+      "title": "Waiting List Entry",
+      "description": "User entry for the beta release waiting list.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "invited", "joined"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "status"]
+    },
+    "Analytics": {
+      "title": "Analytics Snapshot",
+      "description": "Aggregate data for the admin dashboard.",
+      "type": "object",
+      "properties": {
+        "totalUsers": { "type": "number" },
+        "waitingListCount": { "type": "number" },
+        "activeSubscriptions": { "type": "number" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles and roles."
+    },
+    "/waiting_list/{entryId}": {
+      "schema": "WaitingListEntry",
+      "description": "Beta waiting list entries."
+    },
+    "/analytics/overview": {
+      "schema": "Analytics",
+      "description": "Global analytics data."
+    }
+  }
+}
