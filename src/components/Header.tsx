@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import type { User } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const HeaderWrapper = styled.header`
   position: fixed;
@@ -69,6 +72,12 @@ const NavLink = styled(Link)<{ $active?: boolean }>`
   }
 `;
 
+const ButtonGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
 const AccessButton = styled.button`
   padding: 0.6rem 1.25rem;
   font-size: 0.9rem;
@@ -80,9 +89,38 @@ const AccessButton = styled.button`
   }
 `;
 
+const SecondaryButton = styled(Link)`
+  padding: 0.6rem 1.25rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  @media (max-width: 480px) {
+    display: none;
+  }
+`;
+
 export const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleRequestAccess = () => {
     if (location.pathname === '/') {
@@ -106,17 +144,22 @@ export const Header: React.FC = () => {
           <NavLink to="/support" $active={location.pathname === '/support'}>
             Support
           </NavLink>
-          <NavLink to="/login" $active={location.pathname === '/login'}>
-            Login
-          </NavLink>
-          <NavLink to="/signup" $active={location.pathname === '/signup'}>
-            Sign Up
-          </NavLink>
         </NavLinks>
 
-        <AccessButton id="nav-request-access" onClick={handleRequestAccess}>
-          Request Access
-        </AccessButton>
+        <ButtonGroup>
+          {user ? (
+            <AccessButton onClick={() => navigate('/portal')}>
+              Portal
+            </AccessButton>
+          ) : (
+            <>
+              <SecondaryButton to="/login">Log In</SecondaryButton>
+              <AccessButton id="nav-request-access" onClick={handleRequestAccess}>
+                Request Access
+              </AccessButton>
+            </>
+          )}
+        </ButtonGroup>
       </NavContainer>
     </HeaderWrapper>
   );
