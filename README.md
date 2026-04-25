@@ -1,16 +1,29 @@
 # Euler's Market
 
-### Buy & Sell AI Subscription Access Safely
+### Productivity Beyond Sight.
 
-Euler's Market is a minimalist, visionary marketplace designed for the exchange of AI subscription seats (ChatGPT, Claude, Gemini, etc.). Our mission is to optimize global AI compute utilization by allowing users to recoup value from unused subscriptions and providing a secondary market for session access.
+We enable a new standard of human output. By mirroring Euler's transition from visual observation to systemic command, we provide a marketplace where "blind" complexity is traded for absolute productivity.
 
-## Current Status: Under Construction 🏗️
+Leonhard Euler composed his greatest mathematical works after losing his sight entirely, dictating theorems to scribes from pure memory and systemic reasoning. Euler's Market is built on that same principle: that the most powerful form of intelligence is one that operates beyond the limits of direct observation — commanding black-box systems, agentic networks, and distributed compute with precision.
 
-We are currently in the **Visionary Phase**. We are building the core agentic architecture and preparing for the first wave of alpha users.
+## What We Build
+
+A marketplace for AI subscription seats and compute credits — the secondary market for the Age of Intelligence. Trade unused compute, access premium AI models at marginal cost, and liquidate dormant subscription value algorithmically.
+
+## Supported Platforms
+
+ChatGPT Plus · Claude Pro · Gemini Advanced · Midjourney · Perplexity Pro · GitHub Copilot · Groq · Mistral Large · RunwayML Gen-3 · ElevenLabs · Luma Dream Machine
+
+## Current Phase: Augmented Scribe
+
+We are in the **Visionary Phase** — building the core agentic architecture, zero-knowledge escrow infrastructure, and preparing the first wave of alpha access.
 
 ## Join the Waitlist
 
-If you have a subscription you'd like to list, or are looking for affordable access to the world's most powerful models, visit our landing page and join the waitlist.
+Visit [euler.life](https://euler.life) to request early access.
 
 ---
-*Inspired by Leonhard Euler. Built for the Age of Intelligence.*
+
+*Inspired by Leonhard Euler (1707–1783). Built for the Age of Intelligence.*
+
+> "Although to penetrate into the intimate mysteries of nature and thence to learn the true causes of phenomena is not allowed to us, nevertheless it can happen that a certain fictive hypothesis may suffice for explaining many phenomena." — Leonhard Euler
