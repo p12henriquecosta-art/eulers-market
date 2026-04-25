@@ -106,6 +106,12 @@ export const Header: React.FC = () => {
           <NavLink to="/support" $active={location.pathname === '/support'}>
             Support
           </NavLink>
+          <NavLink to="/login" $active={location.pathname === '/login'}>
+            Login
+          </NavLink>
+          <NavLink to="/signup" $active={location.pathname === '/signup'}>
+            Sign Up
+          </NavLink>
         </NavLinks>
 
         <AccessButton id="nav-request-access" onClick={handleRequestAccess}>
