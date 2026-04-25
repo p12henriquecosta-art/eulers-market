@@ -18,8 +18,6 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showMFA, setShowMFA] = useState(false);
-  const [mfaCode, setMfaCode] = useState('');
 
   const checkRateLimit = async () => {
     try {
@@ -49,9 +47,7 @@ export default function Login() {
 
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
-        // Simulate MFA flow if requested (or in a real app, check user claims)
-        // For this demo, we'll show the MFA screen after successful login
-        setShowMFA(true);
+        navigate('/');
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
         navigate('/');
@@ -77,70 +73,6 @@ export default function Login() {
     }
   };
 
-  const verifyMFA = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simulate successful MFA
-    if (mfaCode === '123456') {
-      navigate('/');
-    } else {
-      setError('Invalid verification code. Try 123456');
-    }
-  };
-
-  if (showMFA) {
-    return (
-      <div className="max-w-md mx-auto mt-20 px-6">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white border border-slate-200 p-10 rounded-2xl shadow-2xl relative overflow-hidden"
-        >
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-indigo-500"></div>
-          <div className="text-center space-y-8">
-            <div className="mx-auto w-16 h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-slate-900/20">
-              <ShieldCheck size={32} />
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Two-Factor Authentication</h2>
-              <p className="text-sm text-slate-500 font-medium">Identity verification required for this portal session.</p>
-            </div>
-
-            <form onSubmit={verifyMFA} className="space-y-8 text-left">
-              <div className="space-y-3">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-widest text-center block">Verification Code</label>
-                <input 
-                  type="text"
-                  maxLength={6}
-                  value={mfaCode}
-                  onChange={(e) => setMfaCode(e.target.value)}
-                  className="w-full text-center text-4xl font-bold tracking-[0.4em] bg-slate-50 border border-slate-200 p-5 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all"
-                  placeholder="000000"
-                />
-              </div>
-
-              {error && (
-                <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-100 rounded-xl">
-                  <AlertCircle size={18} className="text-red-500 shrink-0 mt-0.5" />
-                  <div className="space-y-1">
-                    <p className="text-[11px] font-bold text-red-800 uppercase tracking-wider leading-none">Access_Denied</p>
-                    <p className="text-xs text-red-700 font-medium">{error}</p>
-                  </div>
-                </div>
-              )}
-
-              <button 
-                type="submit"
-                className="w-full bg-slate-900 text-white py-4 rounded-xl text-sm font-bold tracking-wider hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10"
-              >
-                Verify & Unlock Portal
-              </button>
-            </form>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-[calc(100vh-80px)] flex">
       {/* Visual Side */}
@@ -151,13 +83,13 @@ export default function Login() {
             <h1 className="text-2xl font-bold tracking-tight">Euler's Market</h1>
           </div>
           
-          <div className="space-y-6">
+            <div className="space-y-6">
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-400 text-[10px] font-bold tracking-widest border border-indigo-500/30">
-              BETA ACCESS PORTAL
+              SECURE ACCESS PORTAL
             </div>
             <h2 className="text-4xl font-light leading-tight tracking-tight">Precision-engineered market management.</h2>
             <p className="text-slate-400 leading-relaxed font-medium">
-              Manage your waiting list access and secure subscription keys with mathematical elegance.
+              Manage your identity and secure subscription keys with mathematical elegance.
             </p>
           </div>
         </div>
@@ -183,8 +115,8 @@ export default function Login() {
         >
           <div className="space-y-10">
             <div className="space-y-3">
-              <h2 className="text-4xl font-bold text-slate-900 tracking-tight">{isLogin ? 'Portal Auth' : 'Register Access'}</h2>
-              <p className="text-slate-500 font-medium leading-relaxed">Identity verification required to access beta features.</p>
+              <h2 className="text-4xl font-bold text-slate-900 tracking-tight">{isLogin ? 'Login' : 'Sign Up'}</h2>
+              <p className="text-slate-500 font-medium leading-relaxed">Secure verification required for portal access.</p>
             </div>
 
             <form onSubmit={handleAuth} className="space-y-6">
@@ -208,7 +140,7 @@ export default function Login() {
                     <Lock size={14} className="text-indigo-500" /> Secure Password
                   </label>
                   {isLogin && (
-                    <Link to="/reset-password" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-700 hover:underline">
+                    <Link to="/reset-password" className="text-[11px] font-bold text-indigo-600 hover:text-indigo-700 hover:underline">
                       Lost Key?
                     </Link>
                   )}
@@ -221,17 +153,6 @@ export default function Login() {
                   className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-medium"
                   placeholder="••••••••"
                 />
-              </div>
-
-              {/* MFA Toggle Suggestion Layout */}
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <ShieldCheck size={18} className="text-indigo-600" />
-                  <span className="text-xs font-bold text-slate-800">Advanced 2FA Protection</span>
-                </div>
-                <div className="w-10 h-5 bg-indigo-600 rounded-full relative">
-                  <div className="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
-                </div>
               </div>
 
               {!isLogin && (

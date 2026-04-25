@@ -34,6 +34,9 @@ export default function Shell({ user }: ShellProps) {
 
               <nav className="hidden md:flex items-center gap-8">
                 <Link to="/" className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors">Market</Link>
+                {user && (
+                    <Link to="/dashboard" className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors">Portal</Link>
+                )}
                 <Link to="/beta" className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors">Beta</Link>
                 {user && (
                     <Link to="/admin" className="text-sm font-semibold text-slate-600 flex items-center gap-1.5 hover:text-indigo-600 transition-colors">
@@ -63,7 +66,7 @@ export default function Shell({ user }: ShellProps) {
                   to="/login"
                   className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10"
                 >
-                  <LogIn size={16} /> Beta Login
+                  <LogIn size={16} /> Login
                 </Link>
               )}
             </div>

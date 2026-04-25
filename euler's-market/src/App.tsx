@@ -14,6 +14,7 @@ import Admin from './pages/Admin';
 import ResetPassword from './pages/ResetPassword';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import Dashboard from './pages/Dashboard';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
@@ -52,6 +53,7 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
             <Route path="/admin" element={user ? <Admin /> : <Navigate to="/login" />} />
           </Route>
         </Routes>

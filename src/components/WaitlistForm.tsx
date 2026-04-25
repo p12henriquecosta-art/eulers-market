@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Persistence } from '../utils/persistence';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const FormWrapper = styled(motion.div)`
   max-width: 550px;
@@ -73,20 +75,11 @@ export const WaitlistForm: React.FC = () => {
     setStatus('loading');
     
     try {
-      const scriptUrl = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
-      
-      if (!scriptUrl || scriptUrl.includes('YOUR_GOOGLE')) {
-        console.warn('Euler Market Security: Secure Mock Implementation triggered - Missing VITE_GOOGLE_SCRIPT_URL');
-        await new Promise(resolve => setTimeout(resolve, 1500));
-      } else {
-        // Real submission logic
-        await fetch(scriptUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, timestamp: new Date().toISOString() })
-        });
-      }
+      // Real submission logic to Firestore
+      await addDoc(collection(db, 'waitlist'), {
+        email,
+        timestamp: new Date().toISOString()
+      });
 
       setStatus('success');
       setEmail('');

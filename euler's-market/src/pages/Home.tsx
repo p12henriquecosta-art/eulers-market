@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { auth, db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { ArrowRight, CheckCircle2, ChevronRight, Globe, Shield, Zap } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { Link } from 'react-router-dom';
 
 export default function Home() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ export default function Home() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const user = auth.currentUser;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +61,27 @@ export default function Home() {
             The next generation ecosystem for digital product subscriptions. 
             Mathematical precision meets effortless management. 
           </p>
+
+          <div className="flex flex-wrap gap-4 pt-10">
+            {user ? (
+               <Link 
+                to="/dashboard"
+                className="px-10 py-5 bg-indigo-600 text-white rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-2xl shadow-indigo-600/20 flex items-center gap-3"
+               >
+                 Go to Portal <ArrowRight size={20} />
+               </Link>
+            ) : (
+              <Link 
+                to="/login"
+                className="px-10 py-5 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-slate-800 transition-all shadow-2xl shadow-slate-900/20 flex items-center gap-3"
+              >
+                Login <ArrowRight size={20} />
+              </Link>
+            )}
+            <button className="px-10 py-5 bg-white border border-slate-200 text-slate-900 rounded-2xl font-bold text-lg hover:bg-slate-50 transition-all shadow-xl shadow-slate-900/5">
+              Documentation
+            </button>
+          </div>
 
           <div className="flex flex-wrap gap-6 pt-4">
             {[
@@ -145,6 +168,12 @@ export default function Home() {
                 </button>
               </form>
               
+              <div className="text-center pt-2">
+                <Link to="/login" className="text-xs font-bold text-slate-400 hover:text-indigo-600 transition-colors uppercase tracking-widest underline decoration-slate-200 underline-offset-8">
+                  Already have access? Portal Login
+                </Link>
+              </div>
+
               <div className="pt-6 border-t border-slate-100 flex items-center gap-3">
                 <Shield size={16} className="text-emerald-500" />
                 <p className="text-[11px] text-slate-400 leading-relaxed font-medium">

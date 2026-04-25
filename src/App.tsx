@@ -8,7 +8,11 @@ import { Process } from './components/Process';
 import { WaitlistForm } from './components/WaitlistForm';
 import { EscrowSystem } from './components/Escrow';
 import { SupportFAQ } from './components/SupportFAQ';
+import { TermsConditions } from './components/TermsConditions';
 import { Footer } from './components/Footer';
+import { AuthGate } from './components/AuthGate';
+import { Portal } from './components/Portal';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import './styles/global.css';
 
 // ─── Spotlight hook (non-blocking via rAF) ────────────────────────────────────
@@ -78,6 +82,14 @@ export const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/support" element={<SupportPage />} />
+        <Route path="/terms" element={<TermsConditions />} />
+        <Route path="/login" element={<AuthGate mode="login" />} />
+        <Route path="/signup" element={<AuthGate mode="signup" />} />
+        <Route path="/portal" element={
+          <ProtectedRoute>
+            <Portal />
+          </ProtectedRoute>
+        } />
       </Routes>
       <Footer />
     </BrowserRouter>
