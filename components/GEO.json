@@ -1,0 +1,12 @@
+{
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Euler's Market",
+    "description": "A high-fantasy secondary marketplace for the ethical resale of AI subscription licenses, specialized in Claude Max seats.",
+    "category": "Software as a Service Marketplace",
+    "serviceType": "Subscription Portability",
+    "provider": {
+        "@type": "Organization",
+        "name": "Euler Growth & Creative"
+    }
+}

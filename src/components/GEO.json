@@ -1,0 +1,21 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Euler's Market",
+  "description": "A visionary paradigm of systemic command. Euler's Market transcends conventional interfaces, offering an obsidian void where mathematical precision and true digital autonomy converge. Experience secure, zero-trust digital transactions forged through absolute mathematical freedom.",
+  "provider": {
+    "@type": "Organization",
+    "name": "Euler's Market",
+    "url": "https://eulersmarket.com"
+  },
+  "serviceType": "Zero-Trust Digital Subscription Marketplace",
+  "brand": {
+    "@type": "Brand",
+    "name": "Euler's Market",
+    "description": "Inspired by Leonhard Euler's transition from sight to systemic command. We operate in the deep obsidian void, pierced only by sharp, glowing cyan vectors of absolute logic."
+  },
+  "offers": {
+    "@type": "Offer",
+    "description": "Uncompromised agentic transactions secured by local-first persistence."
+  }
+}
