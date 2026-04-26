@@ -1,5 +1,4 @@
 {
-  "name": "eulers-market",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",

@@ -4,6 +4,25 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
+import { Spinner } from './ui/Spinner';
+
+// ─── Friendly error mapping ────────────────────────────────────────────────────
+function friendlyAuthError(code: string): string {
+  const map: Record<string, string> = {
+    'auth/user-not-found':         'No account found with this address.',
+    'auth/invalid-credential':     'Incorrect address or passphrase.',
+    'auth/wrong-password':         'Incorrect passphrase. Try again.',
+    'auth/email-already-in-use':   'This address is already registered. Log in instead.',
+    'auth/invalid-email':          'Invalid address format.',
+    'auth/weak-password':          'Passphrase must be at least 6 characters.',
+    'auth/api-key-not-valid':      'Configuration error. Contact support.',
+    'auth/popup-closed-by-user':   'Google sign-in was cancelled.',
+    'auth/cancelled-popup-request':'Google sign-in was cancelled.',
+    'auth/network-request-failed': 'Network error. Check your connection.',
+    'auth/too-many-requests':      'Too many attempts. Please wait a moment.',
+  };
+  return map[code] ?? 'Authentication failed. Please try again.';
+}
 
 const AuthWrapper = styled(motion.div)`
   max-width: 440px;
@@ -82,7 +101,7 @@ export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
       }
       navigate('/portal');
     } catch (err: any) {
-      setError(err.message || 'Authentication failed.');
+      setError(friendlyAuthError(err.code ?? ''));
     } finally {
       setLoading(false);
     }
@@ -95,7 +114,7 @@ export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
       await signInWithPopup(auth, googleProvider);
       navigate('/portal');
     } catch (err: any) {
-      setError(err.message || 'Google authentication failed.');
+      setError(friendlyAuthError(err.code ?? ''));
     } finally {
       setLoading(false);
     }
@@ -135,8 +154,9 @@ export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
             required
             disabled={loading}
           />
-          <button type="submit" disabled={loading}>
-            {loading ? 'Processing...' : (mode === 'login' ? 'Enter Sanctuary' : 'Register Node')}
+          <button type="submit" disabled={loading} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+            {loading && <Spinner size="0.95em" />}
+            {loading ? 'Processing…' : (mode === 'login' ? 'Enter Sanctuary' : 'Register Node')}
           </button>
         </Form>
 
@@ -145,10 +165,11 @@ export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
         <button 
           type="button" 
           className="btn-secondary" 
-          style={{ width: '100%' }}
+          style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
           onClick={handleGoogleAuth}
           disabled={loading}
         >
+          {loading && <Spinner size="0.95em" />}
           Authenticate via Google
         </button>
 

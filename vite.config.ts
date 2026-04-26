@@ -34,4 +34,46 @@ export default defineConfig({
       }
     })
   ],
+
+  build: {
+    // Raise the warning threshold slightly — after splitting, individual vendor
+    // chunks are allowed to be a little larger than the default 500 kB.
+    chunkSizeWarningLimit: 600,
+
+    rollupOptions: {
+      output: {
+        // ── Manual vendor chunks ────────────────────────────────────────────
+        // Groups stable, rarely-changing third-party libraries into dedicated
+        // chunks so they can be cached independently across deployments.
+        manualChunks: (id: string) => {
+          // Firebase SDK — largest dep; split auth, firestore, and core apart
+          // so each feature chunk is as small as possible.
+          if (id.includes('firebase/app') || id.includes('@firebase/app')) {
+            return 'vendor-firebase-core';
+          }
+          if (id.includes('firebase/auth') || id.includes('@firebase/auth')) {
+            return 'vendor-firebase-auth';
+          }
+          if (id.includes('firebase/firestore') || id.includes('@firebase/firestore')) {
+            return 'vendor-firebase-firestore';
+          }
+          // Framer Motion
+          if (id.includes('framer-motion')) {
+            return 'vendor-framer';
+          }
+          // Styled Components
+          if (id.includes('styled-components')) {
+            return 'vendor-styled';
+          }
+          // React core + React DOM + React Router
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+            return 'vendor-react';
+          }
+          if (id.includes('react-router-dom') || id.includes('react-router')) {
+            return 'vendor-router';
+          }
+        },
+      },
+    },
+  },
 })
