@@ -12,6 +12,7 @@ interface Quote {
   href:     string;
   color:    string; // brand accent
   symbol:   string; // short brand mark / abbreviation
+  domain:   string; // domain for fetching the logo
 }
 
 const QUOTES: Quote[] = [
@@ -24,6 +25,7 @@ const QUOTES: Quote[] = [
     href:    'https://www.accenture.com/us-en/insights/artificial-intelligence/state-of-ai-agents',
     color:   '#A100FF',
     symbol:  'Ac',
+    domain:  'accenture.com',
   },
   {
     company: 'BCG',
@@ -34,6 +36,7 @@ const QUOTES: Quote[] = [
     href:    'https://www.bcg.com/capabilities/artificial-intelligence',
     color:   '#00A67E',
     symbol:  'BCG',
+    domain:  'bcg.com',
   },
   {
     company: 'Vercel',
@@ -44,6 +47,7 @@ const QUOTES: Quote[] = [
     href:    'https://www.datadoghq.com/state-of-ai-engineering/',
     color:   '#FFFFFF',
     symbol:  '▲',
+    domain:  'vercel.com',
   },
   {
     company: 'Deloitte',
@@ -54,6 +58,7 @@ const QUOTES: Quote[] = [
     href:    'https://www2.deloitte.com/us/en/insights/focus/tech-trends/2025/tokenomics-and-managing-ai-costs.html',
     color:   '#86BC25',
     symbol:  'De',
+    domain:  'deloitte.com',
   },
   {
     company: 'Portal26',
@@ -64,6 +69,7 @@ const QUOTES: Quote[] = [
     href:    'https://siliconangle.com/2025/02/19/portal26-launches-agentic-token-controls/',
     color:   '#3B82F6',
     symbol:  'P26',
+    domain:  'portal26.ai',
   },
   {
     company: 'Braintrust',
@@ -74,6 +80,7 @@ const QUOTES: Quote[] = [
     href:    'https://www.braintrustdata.com/blog/llm-monitoring',
     color:   '#F97316',
     symbol:  'Bt',
+    domain:  'braintrustdata.com',
   },
   {
     company: 'Consultancy.uk',
@@ -84,6 +91,7 @@ const QUOTES: Quote[] = [
     href:    'https://www.consultancy.uk/news/39064/half-of-professional-services-staff-say-ai-improves-work-life-balance',
     color:   '#6366F1',
     symbol:  'Cu',
+    domain:  'consultancy.uk',
   },
 ];
 
@@ -171,6 +179,14 @@ const Badge = styled.div<{ $color: string }>`
   align-items: center;
   justify-content: center;
   transition: box-shadow 0.25s ease;
+  overflow: hidden;
+
+  img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    border-radius: 4px;
+  }
 `;
 
 const Body = styled.div`
@@ -264,6 +280,22 @@ const CTARow = styled.div`
   flex-wrap: wrap;
 `;
 
+const BadgeLogo: React.FC<{ quote: Quote }> = ({ quote }) => {
+  const [hasError, setHasError] = React.useState(false);
+
+  if (hasError) {
+    return <span>{quote.symbol}</span>;
+  }
+
+  return (
+    <img 
+      src={`https://logo.clearbit.com/${quote.domain}?size=64`} 
+      alt={`${quote.company} logo`}
+      onError={() => setHasError(true)}
+    />
+  );
+};
+
 // ─── Component ────────────────────────────────────────────────────────────────
 export const QuoteTicker: React.FC = () => {
   // Duplicate the array so the marquee loops seamlessly
@@ -288,7 +320,9 @@ export const QuoteTicker: React.FC = () => {
               title={`${q.person} — ${q.company}`}
               onClick={() => handleClick(q)}
             >
-              <Badge $color={q.color} className="badge">{q.symbol}</Badge>
+              <Badge $color={q.color} className="badge">
+                <BadgeLogo quote={q} />
+              </Badge>
               <Body>
                 <QuoteText>{q.quote}</QuoteText>
                 <Meta>
