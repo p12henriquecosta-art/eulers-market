@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Persistence } from '../utils/persistence';
 import { collection, addDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
+import { track } from '../lib/analytics';
 
 const FormWrapper = styled(motion.div)`
   max-width: 550px;
@@ -75,6 +76,7 @@ export const WaitlistForm: React.FC = () => {
     if (!email) return;
     
     if (!auth.currentUser) {
+      track.waitlistSignupRedirect();
       navigate('/signup');
       return;
     }
@@ -89,6 +91,9 @@ export const WaitlistForm: React.FC = () => {
       });
 
       setStatus('success');
+      // Extract domain only (never log the full address)
+      const domain = email.split('@')[1] ?? 'unknown';
+      track.waitlistJoin({ email_domain: domain });
       setEmail('');
       Persistence.remove('waitlist_email_draft');
       Persistence.save('waitlist_session', { status: 'success', timestamp: Date.now() });

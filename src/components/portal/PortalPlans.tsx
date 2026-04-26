@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import type { Plan } from './portal.types';
 import { SectionLabel, PlanGrid, SubCard, SectionTitle } from './portal.styled';
+import { track } from '../../lib/analytics';
 
 const PlanBadge = styled.span<{ $free?: boolean }>`
   display: inline-block;
@@ -89,6 +90,7 @@ export const PortalPlans: React.FC = () => (
               style={{ textDecoration: 'none' }}
               data-track="subscribe_clicked"
               data-plan={plan.name}
+              onClick={() => track.subscribeClicked({ plan: plan.name, price: plan.price })}
             >
               <button style={{ width: '100%', padding: '0.6rem', fontSize: '0.85rem' }}>
                 Subscribe

@@ -5,6 +5,7 @@ import { db } from '../../firebase';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../ui/Toast';
 import { Spinner } from '../ui/Spinner';
+import { track } from '../../lib/analytics';
 import {
   Card, SectionLabel, SectionTitle,
   InlineRow, SmBtn, DestructiveBtn, cardAnim,
@@ -56,6 +57,7 @@ export const PortalAccessKeys: React.FC = () => {
         { merge: true }
       );
       toast('Integration key saved to your account.', 'success');
+      track.keySaved();
       setCustomKey('');
     } catch {
       toast('Failed to save key. Check your connection and try again.', 'error');

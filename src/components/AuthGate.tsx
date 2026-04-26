@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { Spinner } from './ui/Spinner';
+import { track } from '../lib/analytics';
 
 // ─── Friendly error mapping ────────────────────────────────────────────────────
 function friendlyAuthError(code: string): string {
@@ -96,8 +97,10 @@ export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
     try {
       if (mode === 'login') {
         await signInWithEmailAndPassword(auth, email, password);
+        track.loginComplete({ method: 'email' });
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
+        track.signupComplete({ method: 'email' });
       }
       navigate('/portal');
     } catch (err: any) {
@@ -112,6 +115,7 @@ export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
     setError(null);
     try {
       await signInWithPopup(auth, googleProvider);
+      track[mode === 'login' ? 'loginComplete' : 'signupComplete']({ method: 'google' });
       navigate('/portal');
     } catch (err: any) {
       setError(friendlyAuthError(err.code ?? ''));

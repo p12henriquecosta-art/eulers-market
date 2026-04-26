@@ -3,7 +3,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
 import { ToastProvider } from './components/ui/Toast';
 import { Skeleton } from './components/ui/Skeleton';
+import { QuoteTicker } from './components/QuoteTicker';
+import { initAnalytics } from './lib/analytics';
+import { usePageView } from './hooks/usePageView';
 import './styles/global.css';
+
+// ─── Init analytics once at module evaluation ────────────────────────────────
+// Runs before React mounts so no events are lost on fast navigations.
+initAnalytics();
 
 // ─── Eagerly-loaded home-page atoms ─────────────────────────────────────────
 // These render above the fold and must not be deferred.
@@ -16,17 +23,13 @@ import { EscrowSystem }from './components/Escrow';
 import { Footer }      from './components/Footer';
 
 // ─── Route-level lazy bundles ────────────────────────────────────────────────
-// Each lazy() creates its own JS chunk that is downloaded only when the user
-// navigates to that route. Eliminates the 764 kB monolithic bundle warning.
-const AuthGate      = lazy(() => import('./components/AuthGate').then(m => ({ default: m.AuthGate })));
-const Portal        = lazy(() => import('./components/Portal').then(m => ({ default: m.Portal })));
-const SupportFAQ    = lazy(() => import('./components/SupportFAQ').then(m => ({ default: m.SupportFAQ })));
+const AuthGate        = lazy(() => import('./components/AuthGate').then(m => ({ default: m.AuthGate })));
+const Portal          = lazy(() => import('./components/Portal').then(m => ({ default: m.Portal })));
+const SupportFAQ      = lazy(() => import('./components/SupportFAQ').then(m => ({ default: m.SupportFAQ })));
 const TermsConditions = lazy(() => import('./components/TermsConditions').then(m => ({ default: m.TermsConditions })));
 const ProtectedRoute  = lazy(() => import('./components/ProtectedRoute').then(m => ({ default: m.ProtectedRoute })));
 
 // ─── Suspense fallbacks ───────────────────────────────────────────────────────
-
-/** Generic centred spinner for Auth / Support / Terms pages */
 const PageSpinner: React.FC = () => (
   <div style={{
     minHeight: '80vh',
@@ -45,8 +48,6 @@ const PageSpinner: React.FC = () => (
   </div>
 );
 
-/** Portal-shape skeleton — mirrors the real dashboard layout so the transition
- *  feels seamless even before the lazy chunk arrives. */
 const PortalPageFallback: React.FC = () => (
   <div style={{ padding: '7rem 2rem 4rem', maxWidth: 1200, margin: '0 auto' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem' }}>
@@ -81,7 +82,7 @@ const PortalPageFallback: React.FC = () => (
   </div>
 );
 
-// ─── Spotlight hook (non-blocking via rAF) ────────────────────────────────────
+// ─── Spotlight hook ───────────────────────────────────────────────────────────
 function useSpotlight() {
   useEffect(() => {
     let frameId: number;
@@ -100,6 +101,13 @@ function useSpotlight() {
   }, []);
 }
 
+// ─── Analytics page-view tracker ─────────────────────────────────────────────
+// Must live inside <BrowserRouter> to access useLocation.
+const PageViewTracker: React.FC = () => {
+  usePageView();
+  return null;
+};
+
 // ─── Pages ────────────────────────────────────────────────────────────────────
 const HomePage: React.FC = () => (
   <main>
@@ -110,6 +118,9 @@ const HomePage: React.FC = () => (
     </section>
 
     <Stats />
+
+    {/* ── Quote ticker — placed after Stats for maximum early exposure ── */}
+    <QuoteTicker />
 
     <section className="section">
       <div className="container">
@@ -139,9 +150,10 @@ export const App: React.FC = () => {
   return (
     <ToastProvider>
       <BrowserRouter>
+        <PageViewTracker />
         <Header />
         <Routes>
-          <Route path="/"       element={<HomePage />} />
+          <Route path="/" element={<HomePage />} />
 
           <Route path="/support" element={
             <Suspense fallback={<PageSpinner />}>
