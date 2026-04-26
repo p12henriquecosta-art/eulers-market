@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { auth } from '../firebase';
+import { useTranslation } from 'react-i18next';
 
 const HeaderWrapper = styled.header`
   position: fixed;
@@ -111,6 +112,7 @@ const SecondaryButton = styled(Link)`
 `;
 
 export const Header: React.FC = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
@@ -139,23 +141,23 @@ export const Header: React.FC = () => {
 
         <NavLinks aria-label="Primary navigation">
           <NavLink to="/" $active={location.pathname === '/'}>
-            Marketplace
+            {t('nav.marketplace')}
           </NavLink>
           <NavLink to="/support" $active={location.pathname === '/support'}>
-            Support
+            {t('nav.support')}
           </NavLink>
         </NavLinks>
 
         <ButtonGroup>
           {user ? (
             <AccessButton onClick={() => navigate('/portal')}>
-              Portal
+              {t('nav.portal')}
             </AccessButton>
           ) : (
             <>
-              <SecondaryButton to="/login">Log In</SecondaryButton>
+              <SecondaryButton to="/login">{t('nav.login')}</SecondaryButton>
               <AccessButton id="nav-request-access" onClick={handleRequestAccess}>
-                Request Access
+                {t('nav.requestAccess')}
               </AccessButton>
             </>
           )}

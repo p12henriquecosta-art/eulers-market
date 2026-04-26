@@ -6,6 +6,7 @@ import { Persistence } from '../utils/persistence';
 import { collection, addDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { track } from '../lib/analytics';
+import { useTranslation } from 'react-i18next';
 
 const FormWrapper = styled(motion.div)`
   max-width: 550px;
@@ -62,6 +63,7 @@ const Confetti = styled(motion.div)`
 `;
 
 export const WaitlistForm: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = React.useState(Persistence.load('waitlist_email_draft') || '');
   const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -128,10 +130,10 @@ export const WaitlistForm: React.FC = () => {
             >
               🎉
             </Confetti>
-            <h4>You're in!</h4>
-            <p>We've added you to the private beta list. Keep an eye on your inbox for the invitation.</p>
+            <h4>{t('waitlist.successTitle')}</h4>
+            <p>{t('waitlist.successText')}</p>
             <button onClick={() => setStatus('idle')} style={{ background: 'transparent', color: 'var(--color-primary)', border: '1px solid var(--color-primary)', boxShadow: 'none', padding: '0.75rem 1.5rem' }}>
-              Add another email
+              {t('waitlist.addAnother')}
             </button>
           </SuccessMessage>
         ) : (
@@ -141,20 +143,20 @@ export const WaitlistForm: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <FormTitle>Secure Your Spot</FormTitle>
-            <FormText>Join the waitlist to get early access to the market. Beta members receive lifetime 50% discount on platform fees.</FormText>
+            <FormTitle>{t('waitlist.title')}</FormTitle>
+            <FormText>{t('waitlist.subtitle')}</FormText>
             
             <FormGroup onSubmit={handleSubmit}>
               <input 
                 type="email" 
-                placeholder="Enter your professional email" 
+                placeholder={t('waitlist.emailPlaceholder')} 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={status === 'loading'}
                 required
               />
               <button type="submit" disabled={status === 'loading'}>
-                {status === 'loading' ? 'Processing...' : 'Request Invitation'}
+                {status === 'loading' ? t('waitlist.submitting') : t('waitlist.submit')}
               </button>
             </FormGroup>
           </motion.div>

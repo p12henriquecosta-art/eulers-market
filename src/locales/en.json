@@ -1,0 +1,129 @@
+{
+  "nav": {
+    "marketplace": "Marketplace",
+    "support": "Support",
+    "login": "Log In",
+    "requestAccess": "Request Access",
+    "portal": "Portal"
+  },
+  "hero": {
+    "badge": "✦ Augmented Scribe · Private Beta",
+    "titleLine1": "Productivity",
+    "titleLine2": "Beyond Sight.",
+    "subtitle": "Euler dictated his greatest works in total blindness. <strong>We give you the agentic scribes to do the same</strong> in the Age of Intelligence. Liquidate unused compute and master the AI secondary market."
+  },
+  "stats": {
+    "volumeTraded": "Volume Traded",
+    "activeNodes": "Active Nodes",
+    "avgLatency": "Avg Latency",
+    "uptime": "Uptime"
+  },
+  "features": {
+    "label": "Infrastructure",
+    "title": "Engineered for Performance",
+    "subtitle": "The infrastructure that makes AI subscription secondary markets possible — secure, fast, global.",
+    "items": [
+      {
+        "title": "Zero-Knowledge Escrow",
+        "text": "Trade compute capacity without ever exposing your private API keys or credentials. Every transaction is cryptographically isolated."
+      },
+      {
+        "title": "Instant Liquidity",
+        "text": "Convert unused monthly subscription value into spendable credits in milliseconds. The secondary market is always open."
+      },
+      {
+        "title": "Global Scale",
+        "text": "Access high-performance GPU clusters and frontier AI models from any region with sub-25ms median latency."
+      }
+    ]
+  },
+  "process": {
+    "label": "Protocol",
+    "title": "How it Works",
+    "steps": [
+      {
+        "title": "Connect",
+        "description": "Link your AI provider accounts via secure OAuth or credit bridge. No credentials are stored in plaintext — ever."
+      },
+      {
+        "title": "List",
+        "description": "Set your price and availability. Our zero-trust smart contract handles the escrow and settlement atomically."
+      },
+      {
+        "title": "Earn",
+        "description": "Receive instant payouts in USDC or platform credits as your compute capacity is utilized across the network."
+      }
+    ]
+  },
+  "waitlist": {
+    "title": "Secure Your Spot",
+    "subtitle": "Join the waitlist to get early access to the market. Beta members receive lifetime 50% discount on platform fees.",
+    "emailPlaceholder": "Enter your professional email",
+    "submit": "Request Invitation",
+    "submitting": "Processing...",
+    "successTitle": "You're in!",
+    "successText": "We've added you to the private beta list. Keep an eye on your inbox for the invitation.",
+    "addAnother": "Add another email"
+  },
+  "auth": {
+    "loginTitle": "Authentication Gate",
+    "signupTitle": "Join the Vanguard",
+    "loginSubtitle": "Access your autonomous scribes.",
+    "signupSubtitle": "Secure your identity on the market.",
+    "withGoogle": "Continue with Google",
+    "withGithub": "Continue with GitHub",
+    "orEmail": "or use email",
+    "emailPlaceholder": "Identity Designation (Email)",
+    "passwordPlaceholder": "Security Passphrase",
+    "loginSubmit": "Enter Sanctuary",
+    "signupSubmit": "Register Node",
+    "processing": "Processing…",
+    "noAccount": "Don't have a node?",
+    "haveAccount": "Already registered?",
+    "initHere": "Initialize here",
+    "authHere": "Authenticate here"
+  },
+  "portal": {
+    "label": "Customer Sanctuary",
+    "title": "Command Center",
+    "logout": "Terminate Session",
+    "keys": {
+      "label": "Access Keys",
+      "title": "API Integration",
+      "description": "Your read-only market key. Paste a custom integration key from your AI provider below to link scribes directly to your account.",
+      "platformKey": "Platform Key",
+      "customKey": "Custom Integration Key",
+      "customKeyPlaceholder": "Paste your provider API key here (e.g. sk-...)",
+      "rotate": "Rotate",
+      "revoke": "Revoke",
+      "save": "Save",
+      "saved": "✓ Saved"
+    },
+    "plans": {
+      "label": "Available Subscriptions",
+      "free": "Free",
+      "pro": "Pro",
+      "subscribe": "Subscribe",
+      "currentPlan": "Current Plan",
+      "perMonth": "/mo"
+    },
+    "history": {
+      "label": "Purchase History",
+      "date": "Date",
+      "product": "Product",
+      "amount": "Amount",
+      "status": "Status",
+      "empty": "No purchases yet. Subscribe to a plan above to get started."
+    },
+    "billing": {
+      "label": "Billing & Invoices",
+      "empty": "No invoices yet. Invoices are generated automatically 24h after each successful payment.",
+      "download": "↓ PDF"
+    },
+    "usage": {
+      "label": "API Usage · Per Scribe",
+      "title": "Monthly call distribution by provider",
+      "inactive": "Telemetry activates once your first scribe is initialised."
+    }
+  }
+}

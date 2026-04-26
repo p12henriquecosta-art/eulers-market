@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 // ─── Layout ────────────────────────────────────────────────────────────────────
 const StatsWrapper = styled.section`
@@ -97,21 +98,28 @@ const stats = [
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export const Stats: React.FC = () => (
-  <StatsWrapper>
-    <StatsGrid>
-      {stats.map((stat, i) => (
-        <StatItem
-          key={i}
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: i * 0.08, ease: [0.23, 1, 0.32, 1] }}
-        >
-          <StatValue>{stat.value}</StatValue>
-          <StatLabel>{stat.label}</StatLabel>
-        </StatItem>
-      ))}
-    </StatsGrid>
-  </StatsWrapper>
-);
+export const Stats: React.FC = () => {
+  const { t } = useTranslation();
+  const labelKeys: Array<keyof typeof import('../locales/en.json')['stats']> = [
+    'volumeTraded', 'activeNodes', 'avgLatency', 'uptime',
+  ];
+
+  return (
+    <StatsWrapper>
+      <StatsGrid>
+        {stats.map((stat, i) => (
+          <StatItem
+            key={i}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: i * 0.08, ease: [0.23, 1, 0.32, 1] }}
+          >
+            <StatValue>{stat.value}</StatValue>
+            <StatLabel>{t(`stats.${labelKeys[i]}`)}</StatLabel>
+          </StatItem>
+        ))}
+      </StatsGrid>
+    </StatsWrapper>
+  );
+};

@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 // ─── Layout ────────────────────────────────────────────────────────────────────
 const ProcessWrapper = styled.section`
@@ -127,45 +128,37 @@ const StepDescription = styled.p`
 `;
 
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
-const steps = [
-  {
-    title: 'Connect',
-    description: 'Link your AI provider accounts via secure OAuth or credit bridge. No credentials are stored in plaintext — ever.',
-  },
-  {
-    title: 'List',
-    description: 'Set your price and availability. Our zero-trust smart contract handles the escrow and settlement atomically.',
-  },
-  {
-    title: 'Earn',
-    description: 'Receive instant payouts in USDC or platform credits as your compute capacity is utilized across the network.',
-  },
-];
+
+
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export const Process: React.FC = () => (
-  <ProcessWrapper>
-    <Header>
-      <SectionLabel>Protocol</SectionLabel>
-      <Title>How it Works</Title>
-      <CyanRule />
-    </Header>
+export const Process: React.FC = () => {
+  const { t } = useTranslation();
+  const steps = t('process.steps', { returnObjects: true }) as Array<{ title: string; description: string }>;
 
-    <StepsGrid>
-      {steps.map((step, i) => (
-        <StepCard
-          key={i}
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: i * 0.15, ease: [0.23, 1, 0.32, 1] }}
-        >
-          <StepNumber>0{i + 1}</StepNumber>
-          <StepTitle>{step.title}</StepTitle>
-          <StepDescription>{step.description}</StepDescription>
-        </StepCard>
-      ))}
-    </StepsGrid>
-  </ProcessWrapper>
-);
+  return (
+    <ProcessWrapper>
+      <Header>
+        <SectionLabel>{t('process.label')}</SectionLabel>
+        <Title>{t('process.title')}</Title>
+        <CyanRule />
+      </Header>
+
+      <StepsGrid>
+        {steps.map((step, i) => (
+          <StepCard
+            key={i}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: i * 0.15, ease: [0.23, 1, 0.32, 1] }}
+          >
+            <StepNumber>0{i + 1}</StepNumber>
+            <StepTitle>{step.title}</StepTitle>
+            <StepDescription>{step.description}</StepDescription>
+          </StepCard>
+        ))}
+      </StepsGrid>
+    </ProcessWrapper>
+  );
+};

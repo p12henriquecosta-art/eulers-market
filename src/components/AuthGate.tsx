@@ -6,6 +6,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithP
 import { auth, googleProvider, githubProvider } from '../firebase';
 import { Spinner } from './ui/Spinner';
 import { track } from '../lib/analytics';
+import { useTranslation } from 'react-i18next';
 
 // ─── Error mapping ─────────────────────────────────────────────────────────────
 function friendlyAuthError(code: string): string {
@@ -144,6 +145,7 @@ const GitHubIcon = () => (
 
 // ─── Component ─────────────────────────────────────────────────────────────────
 export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
+  const { t } = useTranslation();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [error, setError]       = useState<string | null>(null);
@@ -195,11 +197,9 @@ export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-        <Title>{mode === 'login' ? 'Authentication Gate' : 'Join the Vanguard'}</Title>
+        <Title>{mode === 'login' ? t('auth.loginTitle') : t('auth.signupTitle')}</Title>
         <Subtitle>
-          {mode === 'login'
-            ? 'Access your autonomous scribes.'
-            : 'Secure your identity on the market.'}
+          {mode === 'login' ? t('auth.loginSubtitle') : t('auth.signupSubtitle')}
         </Subtitle>
 
         {error && <ErrorText>{error}</ErrorText>}
@@ -213,7 +213,7 @@ export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
             disabled={loading}
           >
             {loading ? <Spinner size="1em" /> : <GoogleIcon />}
-            Continue with Google
+            {t('auth.withGoogle')}
           </SocialBtn>
 
           <SocialBtn
@@ -223,17 +223,17 @@ export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
             disabled={loading}
           >
             {loading ? <Spinner size="1em" /> : <GitHubIcon />}
-            Continue with GitHub
+            {t('auth.withGithub')}
           </SocialBtn>
         </SocialGroup>
 
-        <Divider>or use email</Divider>
+        <Divider>{t('auth.orEmail')}</Divider>
 
         {/* ── Email / password ── */}
         <Form onSubmit={handleEmailAuth}>
           <input
             type="email"
-            placeholder="Identity Designation (Email)"
+            placeholder={t('auth.emailPlaceholder')}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -241,7 +241,7 @@ export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
           />
           <input
             type="password"
-            placeholder="Security Passphrase"
+            placeholder={t('auth.passwordPlaceholder')}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -253,12 +253,12 @@ export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
             style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
           >
             {loading && <Spinner size="0.95em" />}
-            {loading ? 'Processing…' : (mode === 'login' ? 'Enter Sanctuary' : 'Register Node')}
+            {loading ? t('auth.processing') : (mode === 'login' ? t('auth.loginSubmit') : t('auth.signupSubmit'))}
           </button>
         </Form>
 
         <p style={{ marginTop: '1.5rem', fontSize: '0.85rem' }}>
-          {mode === 'login' ? "Don't have a node?" : 'Already registered?'}{' '}
+          {mode === 'login' ? t('auth.noAccount') : t('auth.haveAccount')}{' '}
           <a
             href={mode === 'login' ? '/signup' : '/login'}
             style={{ color: 'var(--color-primary)', textDecoration: 'none' }}
@@ -267,7 +267,7 @@ export const AuthGate: React.FC<{ mode: 'login' | 'signup' }> = ({ mode }) => {
               navigate(mode === 'login' ? '/signup' : '/login');
             }}
           >
-            {mode === 'login' ? 'Initialize here' : 'Authenticate here'}
+            {mode === 'login' ? t('auth.initHere') : t('auth.authHere')}
           </a>
         </p>
       </AuthWrapper>

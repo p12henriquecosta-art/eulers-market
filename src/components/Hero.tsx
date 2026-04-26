@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation, Trans } from 'react-i18next';
 
 // ─── Hero Concepts ────────────────────────────────────────────────────────────
 const HERO_CONCEPTS = [
@@ -288,6 +289,7 @@ const models = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export const Hero: React.FC = () => {
+  const { t } = useTranslation();
   const [activeIdx, setActiveIdx] = useState(0);
 
   // Non-blocking prefetch of subsequent hero images
@@ -333,7 +335,7 @@ export const Hero: React.FC = () => {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1] }}
       >
-        ✦ Augmented Scribe · Private Beta
+        {t('hero.badge')}
       </Badge>
 
       <Title
@@ -341,8 +343,8 @@ export const Hero: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
       >
-        Productivity
-        <TitleAccent>Beyond Sight.</TitleAccent>
+        {t('hero.titleLine1')}
+        <TitleAccent>{t('hero.titleLine2')}</TitleAccent>
       </Title>
 
       <SubTitle
@@ -350,9 +352,7 @@ export const Hero: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
       >
-        Euler dictated his greatest works in total blindness.{' '}
-        <strong>We give you the agentic scribes to do the same</strong> in the Age of Intelligence.
-        Liquidate unused compute and master the AI secondary market.
+        <Trans i18nKey="hero.subtitle" components={{ strong: <strong /> }} />
       </SubTitle>
 
       <ObsidianRule

@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 // ─── Section Header ────────────────────────────────────────────────────────────
 const SectionLabel = styled.p`
@@ -171,31 +172,34 @@ const features = [
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export const Features: React.FC = () => (
-  <FeaturesWrapper>
-    <div style={{ textAlign: 'center' }}>
-      <SectionLabel>Infrastructure</SectionLabel>
-      <SectionTitle>Engineered for Performance</SectionTitle>
-      <SectionSub>
-        The infrastructure that makes AI subscription secondary markets possible — secure, fast, global.
-      </SectionSub>
-      <CyanRule />
-    </div>
+export const Features: React.FC = () => {
+  const { t } = useTranslation();
+  const items = t('features.items', { returnObjects: true }) as Array<{ title: string; text: string }>;
 
-    <Grid>
-      {features.map((feature, idx) => (
-        <FeatureCard
-          key={idx}
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.55, delay: idx * 0.12, ease: [0.23, 1, 0.32, 1] }}
-        >
-          <IconWrapper>{feature.icon}</IconWrapper>
-          <CardTitle>{feature.title}</CardTitle>
-          <CardText>{feature.text}</CardText>
-        </FeatureCard>
-      ))}
-    </Grid>
-  </FeaturesWrapper>
-);
+  return (
+    <FeaturesWrapper>
+      <div style={{ textAlign: 'center' }}>
+        <SectionLabel>{t('features.label')}</SectionLabel>
+        <SectionTitle>{t('features.title')}</SectionTitle>
+        <SectionSub>{t('features.subtitle')}</SectionSub>
+        <CyanRule />
+      </div>
+
+      <Grid>
+        {features.map((feature, idx) => (
+          <FeatureCard
+            key={idx}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, delay: idx * 0.12, ease: [0.23, 1, 0.32, 1] }}
+          >
+            <IconWrapper>{feature.icon}</IconWrapper>
+            <CardTitle>{items[idx]?.title ?? feature.title}</CardTitle>
+            <CardText>{items[idx]?.text ?? feature.text}</CardText>
+          </FeatureCard>
+        ))}
+      </Grid>
+    </FeaturesWrapper>
+  );
+};

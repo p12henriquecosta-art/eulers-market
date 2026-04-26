@@ -1,0 +1,129 @@
+{
+  "nav": {
+    "marketplace": "Mercado",
+    "support": "Soporte",
+    "login": "Iniciar sesión",
+    "requestAccess": "Solicitar Acceso",
+    "portal": "Portal"
+  },
+  "hero": {
+    "badge": "✦ Escriba Aumentado · Beta Privada",
+    "titleLine1": "Productividad",
+    "titleLine2": "Más Allá de la Visión.",
+    "subtitle": "Euler dictó sus mayores obras en ceguera total. <strong>Te damos los escribas agénticos para hacer lo mismo</strong> en la Era de la Inteligencia. Liquida el cómputo no utilizado y domina el mercado secundario de IA."
+  },
+  "stats": {
+    "volumeTraded": "Volumen Negociado",
+    "activeNodes": "Nodos Activos",
+    "avgLatency": "Latencia Media",
+    "uptime": "Disponibilidad"
+  },
+  "features": {
+    "label": "Infraestructura",
+    "title": "Diseñado para el Rendimiento",
+    "subtitle": "La infraestructura que hace posibles los mercados secundarios de suscripciones de IA — segura, rápida y global.",
+    "items": [
+      {
+        "title": "Custodia de Conocimiento Cero",
+        "text": "Intercambia capacidad de cómputo sin exponer tus claves API privadas. Cada transacción está criptográficamente aislada."
+      },
+      {
+        "title": "Liquidez Instantánea",
+        "text": "Convierte el valor de suscripción mensual no utilizado en créditos en milisegundos. El mercado secundario está siempre abierto."
+      },
+      {
+        "title": "Escala Global",
+        "text": "Accede a clústeres GPU de alto rendimiento y modelos de IA de frontera desde cualquier región con latencia media inferior a 25ms."
+      }
+    ]
+  },
+  "process": {
+    "label": "Protocolo",
+    "title": "Cómo Funciona",
+    "steps": [
+      {
+        "title": "Conectar",
+        "description": "Vincula tus cuentas de proveedores de IA mediante OAuth seguro o puente de crédito. Ninguna credencial se almacena en texto plano — jamás."
+      },
+      {
+        "title": "Listar",
+        "description": "Establece tu precio y disponibilidad. Nuestro contrato inteligente zero-trust gestiona el depósito en garantía y la liquidación de forma atómica."
+      },
+      {
+        "title": "Ganar",
+        "description": "Recibe pagos instantáneos en USDC o créditos de plataforma a medida que tu capacidad de cómputo se utiliza en la red."
+      }
+    ]
+  },
+  "waitlist": {
+    "title": "Asegura tu Lugar",
+    "subtitle": "Únete a la lista de espera para acceso anticipado al mercado. Los miembros beta reciben un 50% de descuento de por vida en las tarifas de la plataforma.",
+    "emailPlaceholder": "Introduce tu email profesional",
+    "submit": "Solicitar Invitación",
+    "submitting": "Procesando...",
+    "successTitle": "¡Estás dentro!",
+    "successText": "Te hemos añadido a la lista de beta privada. Estate atento a tu bandeja de entrada para la invitación.",
+    "addAnother": "Añadir otro email"
+  },
+  "auth": {
+    "loginTitle": "Portal de Autenticación",
+    "signupTitle": "Únete a la Vanguardia",
+    "loginSubtitle": "Accede a tus escribas autónomos.",
+    "signupSubtitle": "Protege tu identidad en el mercado.",
+    "withGoogle": "Continuar con Google",
+    "withGithub": "Continuar con GitHub",
+    "orEmail": "o usar email",
+    "emailPlaceholder": "Designación de Identidad (Email)",
+    "passwordPlaceholder": "Frase de Seguridad",
+    "loginSubmit": "Entrar al Santuario",
+    "signupSubmit": "Registrar Nodo",
+    "processing": "Procesando…",
+    "noAccount": "¿No tienes un nodo?",
+    "haveAccount": "¿Ya estás registrado?",
+    "initHere": "Inicializa aquí",
+    "authHere": "Autentícate aquí"
+  },
+  "portal": {
+    "label": "Santuario del Cliente",
+    "title": "Centro de Comando",
+    "logout": "Terminar Sesión",
+    "keys": {
+      "label": "Claves de Acceso",
+      "title": "Integración de API",
+      "description": "Tu clave de mercado de solo lectura. Pega abajo una clave de integración personalizada de tu proveedor de IA para vincular escribas directamente a tu cuenta.",
+      "platformKey": "Clave de Plataforma",
+      "customKey": "Clave de Integración Personalizada",
+      "customKeyPlaceholder": "Pega aquí tu clave API (ej: sk-...)",
+      "rotate": "Rotar",
+      "revoke": "Revocar",
+      "save": "Guardar",
+      "saved": "✓ Guardado"
+    },
+    "plans": {
+      "label": "Suscripciones Disponibles",
+      "free": "Gratis",
+      "pro": "Pro",
+      "subscribe": "Suscribirse",
+      "currentPlan": "Plan Actual",
+      "perMonth": "/mes"
+    },
+    "history": {
+      "label": "Historial de Compras",
+      "date": "Fecha",
+      "product": "Producto",
+      "amount": "Importe",
+      "status": "Estado",
+      "empty": "Sin compras aún. Suscríbete a un plan para empezar."
+    },
+    "billing": {
+      "label": "Facturación & Facturas",
+      "empty": "Sin facturas aún. Las facturas se generan automáticamente 24h después de cada pago exitoso.",
+      "download": "↓ PDF"
+    },
+    "usage": {
+      "label": "Uso de API · Por Escriba",
+      "title": "Distribución mensual de llamadas por proveedor",
+      "inactive": "La telemetría se activa cuando tu primer escriba sea inicializado."
+    }
+  }
+}
