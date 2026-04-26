@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
+import { PaymentMethodSheet } from './portal/PaymentMethodSheet';
+import { CryptoPaymentModal } from './portal/CryptoPaymentModal';
+import type { Plan } from './portal/portal.types';
 
 // ─── Layout ────────────────────────────────────────────────────────────────────
 const PortalWrapper = styled.div`
@@ -362,6 +365,10 @@ export const Portal: React.FC = () => {
   const [accessKey] = useState('EULR-XXXXXXXX-XXXX');
   const [customKey, setCustomKey] = useState('');
   const [keySaved, setKeySaved] = useState(false);
+  
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [showMethodSheet, setShowMethodSheet] = useState(false);
+  const [showCryptoModal, setShowCryptoModal] = useState(false);
 
   const handleLogout = async () => { await signOut(auth); };
 
@@ -369,6 +376,28 @@ export const Portal: React.FC = () => {
     if (!customKey.trim()) return;
     setKeySaved(true);
     setTimeout(() => setKeySaved(false), 2000);
+  };
+
+  const handleSubscribeClick = (plan: any) => {
+    setSelectedPlan(plan as Plan);
+    setShowMethodSheet(true);
+  };
+
+  const handleSelectCard = () => {
+    if (selectedPlan?.sumupUrl) {
+      window.open(selectedPlan.sumupUrl, '_blank', 'noopener,noreferrer');
+    }
+    setShowMethodSheet(false);
+  };
+
+  const handleSelectBank = () => {
+    window.location.href = `mailto:support@euler.life?subject=Invoice Request: ${selectedPlan?.name}&body=Please generate an invoice for the ${selectedPlan?.name} plan. My account email is ${auth.currentUser?.email || ''}`;
+    setShowMethodSheet(false);
+  };
+
+  const handleSelectCrypto = () => {
+    setShowMethodSheet(false);
+    setShowCryptoModal(true);
   };
 
   return (
@@ -432,12 +461,12 @@ export const Portal: React.FC = () => {
                 </PriceText>
                 <PlanDesc>{plan.desc}</PlanDesc>
                 {plan.sumupUrl ? (
-                  <a href={plan.sumupUrl} target="_blank" rel="noopener noreferrer"
-                    style={{ textDecoration: 'none' }}>
-                    <button style={{ width: '100%', padding: '0.6rem', fontSize: '0.85rem' }}>
-                      Subscribe
-                    </button>
-                  </a>
+                  <button 
+                    onClick={() => handleSubscribeClick(plan)}
+                    style={{ width: '100%', padding: '0.6rem', fontSize: '0.85rem' }}
+                  >
+                    Subscribe
+                  </button>
                 ) : (
                   <button style={{ width: '100%', padding: '0.6rem', fontSize: '0.85rem', opacity: 0.5, cursor: 'default' }} disabled>
                     Current Plan
@@ -536,6 +565,23 @@ export const Portal: React.FC = () => {
             </p>
           </Card>
         </FullRow>
+
+        {showMethodSheet && selectedPlan && (
+          <PaymentMethodSheet
+            plan={selectedPlan}
+            onClose={() => setShowMethodSheet(false)}
+            onSelectCard={handleSelectCard}
+            onSelectBank={handleSelectBank}
+            onSelectCrypto={handleSelectCrypto}
+          />
+        )}
+
+        {showCryptoModal && selectedPlan && (
+          <CryptoPaymentModal
+            plan={selectedPlan}
+            onClose={() => setShowCryptoModal(false)}
+          />
+        )}
       </PortalWrapper>
     </main>
   );

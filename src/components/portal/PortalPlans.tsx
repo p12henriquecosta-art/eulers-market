@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import type { Plan } from './portal.types';
 import { SectionLabel, PlanGrid, SubCard, SectionTitle } from './portal.styled';
 import { track } from '../../lib/analytics';
+import { PaymentMethodSheet } from './PaymentMethodSheet';
+import { CryptoPaymentModal } from './CryptoPaymentModal';
 
 const PlanBadge = styled.span<{ $free?: boolean }>`
   display: inline-block;
@@ -70,11 +72,39 @@ const PLANS: Plan[] = [
   },
 ];
 
-export const PortalPlans: React.FC = () => (
-  <div style={{ marginBottom: '1.5rem' }}>
-    <SectionLabel>Available Subscriptions</SectionLabel>
-    <PlanGrid>
-      {PLANS.map(plan => (
+export const PortalPlans: React.FC = () => {
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [showMethodSheet, setShowMethodSheet] = useState(false);
+  const [showCryptoModal, setShowCryptoModal] = useState(false);
+
+  const handleSubscribeClick = (plan: Plan) => {
+    track.subscribeClicked({ plan: plan.name, price: plan.price });
+    setSelectedPlan(plan);
+    setShowMethodSheet(true);
+  };
+
+  const handleSelectCard = () => {
+    if (selectedPlan?.sumupUrl) {
+      window.open(selectedPlan.sumupUrl, '_blank', 'noopener,noreferrer');
+    }
+    setShowMethodSheet(false);
+  };
+
+  const handleSelectBank = () => {
+    window.location.href = `mailto:support@euler.life?subject=Invoice Request: ${selectedPlan?.name}&body=Please generate an invoice for the ${selectedPlan?.name} plan.`;
+    setShowMethodSheet(false);
+  };
+
+  const handleSelectCrypto = () => {
+    setShowMethodSheet(false);
+    setShowCryptoModal(true);
+  };
+
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      <SectionLabel>Available Subscriptions</SectionLabel>
+      <PlanGrid>
+        {PLANS.map(plan => (
         <SubCard key={plan.name}>
           <PlanBadge $free={plan.free}>{plan.free ? 'Free' : 'Pro'}</PlanBadge>
           <SectionTitle style={{ fontSize: '0.95rem' }}>{plan.name}</SectionTitle>
@@ -83,19 +113,14 @@ export const PortalPlans: React.FC = () => (
           </PriceText>
           <PlanDesc>{plan.desc}</PlanDesc>
           {plan.sumupUrl ? (
-            <a
-              href={plan.sumupUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: 'none' }}
-              data-track="subscribe_clicked"
-              data-plan={plan.name}
-              onClick={() => track.subscribeClicked({ plan: plan.name, price: plan.price })}
-            >
-              <button style={{ width: '100%', padding: '0.6rem', fontSize: '0.85rem' }}>
+              <button
+                onClick={() => handleSubscribeClick(plan)}
+                style={{ width: '100%', padding: '0.6rem', fontSize: '0.85rem' }}
+                data-track="subscribe_clicked"
+                data-plan={plan.name}
+              >
                 Subscribe
               </button>
-            </a>
           ) : (
             <button
               style={{ width: '100%', padding: '0.6rem', fontSize: '0.85rem', opacity: 0.5, cursor: 'default' }}
@@ -107,5 +132,22 @@ export const PortalPlans: React.FC = () => (
         </SubCard>
       ))}
     </PlanGrid>
+
+    {showMethodSheet && selectedPlan && (
+      <PaymentMethodSheet
+        plan={selectedPlan}
+        onClose={() => setShowMethodSheet(false)}
+        onSelectCard={handleSelectCard}
+        onSelectBank={handleSelectBank}
+        onSelectCrypto={handleSelectCrypto}
+      />
+    )}
+
+    {showCryptoModal && selectedPlan && (
+      <CryptoPaymentModal
+        plan={selectedPlan}
+        onClose={() => setShowCryptoModal(false)}
+      />
+    )}
   </div>
 );
