@@ -150,4 +150,5 @@ export const PortalPlans: React.FC = () => {
       />
     )}
   </div>
-);
+  );
+};

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { createPortal } from 'react-dom';
 import type { Plan } from './portal.types';
+import { collection, addDoc } from 'firebase/firestore';
+import { db, auth } from '../../firebase';
 
 // ─── Wallet registry ──────────────────────────────────────────────────────────
 const WALLETS = [
@@ -55,7 +57,6 @@ const WALLETS = [
 // ─── Animations ───────────────────────────────────────────────────────────────
 const fadeIn = keyframes`from { opacity: 0 } to { opacity: 1 }`;
 const slideUp = keyframes`from { opacity: 0; transform: translateY(32px) scale(0.98) } to { opacity: 1; transform: translateY(0) scale(1) }`;
-const pulse = keyframes`0%, 100% { opacity: 1 } 50% { opacity: 0.5 }`;
 
 // ─── Styled components ────────────────────────────────────────────────────────
 const Backdrop = styled.div`
@@ -265,24 +266,83 @@ const PlanTag = styled.div`
 const Divider = styled.div`
   height: 1px;
   background: rgba(255,255,255,0.05);
-  margin: 1rem 0;
+  margin: 1.25rem 0;
 `;
 
-const Footer = styled.div`
+const ProofSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+`;
+
+const ProofLabel = styled.label`
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: 0.01em;
+`;
+
+const ProofInputRow = styled.form`
+  display: flex;
+  gap: 0.5rem;
+`;
+
+const ProofInput = styled.input`
+  flex: 1;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-family: var(--font-mono, 'Courier New', monospace);
+  transition: all 0.2s ease;
+
+  &::placeholder {
+    color: var(--color-text-muted);
+    font-family: var(--font-sans);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: rgba(0,242,254,0.4);
+    background: rgba(0,242,254,0.03);
+  }
+`;
+
+const SubmitBtn = styled.button`
+  background: var(--color-primary);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 0 1.25rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,242,254,0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const SuccessState = styled.div`
+  padding: 1rem;
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.2);
+  border-radius: 8px;
+  color: #22C55E;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-`;
-
-const PulsingDot = styled.span`
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #22C55E;
-  display: inline-block;
-  animation: ${pulse} 2s ease-in-out infinite;
+  gap: 0.5rem;
+  font-weight: 500;
 `;
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -294,6 +354,8 @@ interface Props {
 export const CryptoPaymentModal: React.FC<Props> = ({ plan, onClose }) => {
   const [activeId, setActiveId] = useState('btc');
   const [copied, setCopied] = useState(false);
+  const [txHash, setTxHash] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   const wallet = WALLETS.find(w => w.id === activeId) ?? WALLETS[0];
 
@@ -303,6 +365,35 @@ export const CryptoPaymentModal: React.FC<Props> = ({ plan, onClose }) => {
       setTimeout(() => setCopied(false), 2500);
     });
   }, [wallet.address]);
+
+  const handleSubmitProof = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!txHash.trim()) return;
+
+    setStatus('loading');
+
+    try {
+      // In production, user will be logged in if they are on this portal.
+      // But we check just to be safe.
+      const user = auth.currentUser;
+      
+      await addDoc(collection(db, 'crypto_payments'), {
+        userId: user?.uid || 'anonymous',
+        userEmail: user?.email || 'unknown',
+        planId: plan.id,
+        planName: plan.name,
+        currency: wallet.ticker,
+        txHash: txHash.trim(),
+        timestamp: new Date().toISOString(),
+        status: 'pending_verification'
+      });
+
+      setStatus('success');
+    } catch (err) {
+      console.error('Failed to submit proof:', err);
+      setStatus('error');
+    }
+  };
 
   // Reset copy state when tab changes
   useEffect(() => { setCopied(false); }, [activeId]);
@@ -367,10 +458,34 @@ export const CryptoPaymentModal: React.FC<Props> = ({ plan, onClose }) => {
 
           <Divider />
 
-          <Footer>
-            <PulsingDot />
-            After sending, reply to your confirmation email with the transaction hash for manual activation. Access granted within 24 hours.
-          </Footer>
+          <ProofSection>
+            {status === 'success' ? (
+              <SuccessState>
+                ✓ Proof submitted successfully. Access will be granted within 24 hours.
+              </SuccessState>
+            ) : (
+              <>
+                <ProofLabel>Submit Proof of Payment</ProofLabel>
+                <ProofInputRow onSubmit={handleSubmitProof}>
+                  <ProofInput 
+                    placeholder="Enter Transaction Hash (TxID)" 
+                    value={txHash}
+                    onChange={e => setTxHash(e.target.value)}
+                    disabled={status === 'loading'}
+                    required
+                  />
+                  <SubmitBtn type="submit" disabled={status === 'loading' || !txHash.trim()}>
+                    {status === 'loading' ? 'Sending...' : 'Submit'}
+                  </SubmitBtn>
+                </ProofInputRow>
+                {status === 'error' && (
+                  <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+                    Failed to submit. Please email us at support@euler.life
+                  </p>
+                )}
+              </>
+            )}
+          </ProofSection>
         </Body>
       </Modal>
     </Backdrop>,
