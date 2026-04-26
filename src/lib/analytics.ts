@@ -68,11 +68,11 @@ export const track = {
   },
 
   // ── Auth ─────────────────────────────────────────────────────────────────
-  signupComplete(params: { method: 'email' | 'google' }): void {
+  signupComplete(params: { method: 'email' | 'google' | 'github' }): void {
     gtag('sign_up', { method: params.method });
   },
 
-  loginComplete(params: { method: 'email' | 'google' }): void {
+  loginComplete(params: { method: 'email' | 'google' | 'github' }): void {
     gtag('login', { method: params.method });
   },
 

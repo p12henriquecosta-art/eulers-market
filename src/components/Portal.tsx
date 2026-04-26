@@ -9,13 +9,29 @@ const PortalWrapper = styled.div`
   padding: 7rem 2rem 4rem;
   max-width: 1200px;
   margin: 0 auto;
+
+  @media (max-width: 640px) {
+    padding: 5.5rem 1rem 3rem;
+  }
 `;
 
 const PortalHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.25rem;
   margin-bottom: 3rem;
+
+  @media (max-width: 640px) {
+    align-items: flex-start;
+    margin-bottom: 2rem;
+
+    /* Button sits below the title block */
+    button {
+      width: 100%;
+    }
+  }
 `;
 
 const SectionTitle = styled.h3`
