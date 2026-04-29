@@ -1,4 +1,7 @@
 {
+  "common": {
+    "close": "Close"
+  },
   "nav": {
     "marketplace": "Marketplace",
     "support": "Support",
@@ -97,7 +100,11 @@
       "rotate": "Rotate",
       "revoke": "Revoke",
       "save": "Save",
-      "saved": "✓ Saved"
+      "saved": "✓ Saved",
+      "saveSuccess": "Custom integration key updated successfully.",
+      "rotateInitiated": "Platform key rotation initiated. New key will be generated shortly.",
+      "revokeConfirm": "Are you sure you want to revoke this platform key? All active scribes using this key will be disconnected.",
+      "revokeInitiated": "Platform key revocation initiated."
     },
     "plans": {
       "label": "Available Subscriptions",
@@ -105,7 +112,28 @@
       "pro": "Pro",
       "subscribe": "Subscribe",
       "currentPlan": "Current Plan",
-      "perMonth": "/mo"
+      "perMonth": "/mo",
+      "secureLinkHint": "Visa, Mastercard · Secure link sent to email",
+      "bankTransferHint": "Receive an invoice by email · 1–3 business days",
+      "cryptoHint": "BTC · XRP · USDC via Ethereum · 24 h activation",
+      "items": {
+        "early_access": {
+          "name": "Early Access",
+          "desc": "Community tier. Access the marketplace with limited scribe concurrency and public listings."
+        },
+        "gpt4o": {
+          "name": "Early Access · ChatGPT",
+          "desc": "Unlock GPT-4o scribes. Priority queue, extended context window, and commercial usage rights."
+        },
+        "claude": {
+          "name": "Early Access · Claude AI",
+          "desc": "Unlock Claude Sonnet scribes. Superior reasoning and 200K token documents, fully managed."
+        },
+        "perplexity": {
+          "name": "Early Access · Perplexity",
+          "desc": "Real-time web intelligence. Perplexity-powered scribes with live search augmentation."
+        }
+      }
     },
     "history": {
       "label": "Purchase History",
@@ -118,12 +146,42 @@
     "billing": {
       "label": "Billing & Invoices",
       "empty": "No invoices yet. Invoices are generated automatically 24h after each successful payment.",
-      "download": "↓ PDF"
+      "download": "↓ PDF",
+      "initiating": "Initiating secure payment link for {{planName}}...",
+      "linkSent": "Payment link sent! Check your inbox: {{email}}",
+      "error": "Could not initiate payment. Please try again or contact support.",
+      "redirecting": "Redirecting to your email client for invoice request."
     },
     "usage": {
       "label": "API Usage · Per Scribe",
       "title": "Monthly call distribution by provider",
       "inactive": "Telemetry activates once your first scribe is initialised."
+    },
+    "methods": {
+      "title": "Choose Payment Method",
+      "subtitle": "Select how you'd like to subscribe",
+      "card": "Credit / Debit Card",
+      "bank": "Bank Transfer",
+      "crypto": "Cryptocurrency"
+    },
+    "crypto": {
+      "title": "Pay with Cryptocurrency",
+      "subtitle": "Send the exact amount to the address below",
+      "walletLabel": "{{label}} ({{ticker}}) Address",
+      "copy": "Copy",
+      "copied": "✓ Copied",
+      "proofLabel": "Submit Proof of Payment",
+      "proofPlaceholder": "Enter Transaction Hash (TxID)",
+      "submit": "Submit",
+      "sending": "Sending...",
+      "success": "✓ Proof submitted successfully. Access will be granted within 24 hours.",
+      "error": "Failed to submit. Please email us at support@euler.life",
+      "notes": {
+        "btc": "Native SegWit (bech32). Minimum 0.00001 BTC.",
+        "xrp": "XRP Ledger. No destination tag required.",
+        "usdc": "ERC-20 on Ethereum Mainnet only. Do not send from other chains."
+      },
+      "walletAddressLabel": "{{label}} ({{ticker}}) Address"
     }
   }
 }

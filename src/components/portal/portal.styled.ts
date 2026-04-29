@@ -6,6 +6,10 @@ export const PortalWrapper = styled.div`
   padding: 7rem 2rem 4rem;
   max-width: 1200px;
   margin: 0 auto;
+
+  @media (max-width: 640px) {
+    padding: 5rem 1.25rem 3rem;
+  }
 `;
 
 export const PortalHeader = styled.div`
@@ -13,6 +17,13 @@ export const PortalHeader = styled.div`
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: 3rem;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
 `;
 
 export const TwoCol = styled.div`
@@ -102,6 +113,15 @@ export const InlineRow = styled.div`
   gap: 0.75rem;
   align-items: center;
 
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+    
+    button {
+      width: 100%;
+    }
+  }
+
   input {
     flex: 1;
   }
@@ -129,9 +149,22 @@ export const DestructiveBtn = styled.button`
   }
 `;
 
-// ─── Table ────────────────────────────────────────────────────────────────────
+export const TableWrapper = styled.div`
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -1.75rem;
+  padding: 0 1.75rem;
+  
+  @media (max-width: 640px) {
+    margin: 0 -1.25rem;
+    padding: 0 1.25rem;
+  }
+`;
+
 export const Table = styled.table`
   width: 100%;
+  min-width: 500px;
   border-collapse: collapse;
   font-size: 0.88rem;
 `;

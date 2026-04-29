@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { createPortal } from 'react-dom';
 import type { Plan } from './portal.types';
+import { useTranslation } from 'react-i18next';
 
 // ─── Animations ───────────────────────────────────────────────────────────────
 const fadeIn = keyframes`from { opacity: 0 } to { opacity: 1 }`;
@@ -143,10 +144,17 @@ const MethodHint = styled.div`
   color: var(--color-text-muted);
 `;
 
-const Chevron = styled.span`
-  font-size: 0.85rem;
+const Chevron = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--color-text-muted);
-  flex-shrink: 0;
+  transition: transform 0.2s var(--ease-out), color 0.2s var(--ease-out);
+  
+  ${MethodBtn}:hover & {
+    color: var(--color-primary);
+    transform: translateX(2px);
+  }
 `;
 
 const Divider = styled.div`
@@ -187,6 +195,8 @@ interface Props {
 export const PaymentMethodSheet: React.FC<Props> = ({
   plan, onClose, onSelectCard, onSelectBank, onSelectCrypto,
 }) => {
+  const { t } = useTranslation();
+
   // Close on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -199,15 +209,15 @@ export const PaymentMethodSheet: React.FC<Props> = ({
       <Sheet onClick={e => e.stopPropagation()}>
         <SheetHeader>
           <div>
-            <SheetTitle>Choose Payment Method</SheetTitle>
-            <SheetSub>Select how you'd like to subscribe</SheetSub>
+            <SheetTitle>{t('portal.methods.title')}</SheetTitle>
+            <SheetSub>{t('portal.methods.subtitle')}</SheetSub>
           </div>
-          <CloseBtn onClick={onClose} aria-label="Close">✕</CloseBtn>
+          <CloseBtn onClick={onClose} aria-label={t('common.close') || 'Close'}>✕</CloseBtn>
         </SheetHeader>
 
         <PlanPill>
-          <PlanName>{plan.name}</PlanName>
-          <PlanPrice>€{plan.price.toFixed(2)}/mo</PlanPrice>
+          <PlanName>{t(`portal.plans.items.${plan.id}.name`)}</PlanName>
+          <PlanPrice>€{plan.price.toFixed(2)}{t('portal.plans.perMonth')}</PlanPrice>
         </PlanPill>
 
         <MethodList>
@@ -215,14 +225,23 @@ export const PaymentMethodSheet: React.FC<Props> = ({
           <MethodBtn
             id="payment-method-card"
             onClick={onSelectCard}
-            aria-label="Pay by card"
+            aria-label={t('portal.methods.card')}
           >
-            <IconBox $bg="rgba(0,242,254,0.08)" $border="rgba(0,242,254,0.18)">💳</IconBox>
+            <IconBox $bg="rgba(0,242,254,0.06)" $border="rgba(0,242,254,0.15)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <line x1="2" y1="10" x2="22" y2="10" />
+              </svg>
+            </IconBox>
             <MethodInfo>
-              <MethodName>Credit / Debit Card</MethodName>
-              <MethodHint>Visa, Mastercard · Instant activation</MethodHint>
+              <MethodName>{t('portal.methods.card')}</MethodName>
+              <MethodHint>{t('portal.plans.secureLinkHint')}</MethodHint>
             </MethodInfo>
-            <Chevron>›</Chevron>
+            <Chevron>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </Chevron>
           </MethodBtn>
 
           <Divider />
@@ -231,14 +250,29 @@ export const PaymentMethodSheet: React.FC<Props> = ({
           <MethodBtn
             id="payment-method-bank"
             onClick={onSelectBank}
-            aria-label="Request invoice for bank transfer"
+            aria-label={t('portal.methods.bank')}
           >
-            <IconBox $bg="rgba(202,138,4,0.08)" $border="rgba(202,138,4,0.2)">🏦</IconBox>
+            <IconBox $bg="rgba(255,255,255,0.04)" $border="rgba(255,255,255,0.08)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 21h18" />
+                <path d="M3 10h18" />
+                <path d="M5 6l7-3 7 3" />
+                <path d="M4 10v11" />
+                <path d="M20 10v11" />
+                <path d="M8 14v3" />
+                <path d="M12 14v3" />
+                <path d="M16 14v3" />
+              </svg>
+            </IconBox>
             <MethodInfo>
-              <MethodName>Bank Transfer</MethodName>
-              <MethodHint>Receive an invoice by email · 1–3 business days</MethodHint>
+              <MethodName>{t('portal.methods.bank')}</MethodName>
+              <MethodHint>{t('portal.plans.bankTransferHint')}</MethodHint>
             </MethodInfo>
-            <Chevron>›</Chevron>
+            <Chevron>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </Chevron>
           </MethodBtn>
 
           <Divider />
@@ -247,14 +281,26 @@ export const PaymentMethodSheet: React.FC<Props> = ({
           <MethodBtn
             id="payment-method-crypto"
             onClick={onSelectCrypto}
-            aria-label="Pay with cryptocurrency"
+            aria-label={t('portal.methods.crypto')}
           >
-            <IconBox $bg="rgba(247,147,26,0.08)" $border="rgba(247,147,26,0.2)">⬡</IconBox>
+            <IconBox $bg="rgba(255,255,255,0.04)" $border="rgba(255,255,255,0.08)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2l4.5 2.5v11L12 18l-4.5-2.5v-11z" />
+                <path d="M12 18v4" />
+                <path d="M4.5 4.5l3 1.5" />
+                <path d="M19.5 4.5l-3 1.5" />
+                <path d="M12 7l3 1.5v3.5L12 13.5 9 12V8.5z" />
+              </svg>
+            </IconBox>
             <MethodInfo>
-              <MethodName>Cryptocurrency</MethodName>
-              <MethodHint>BTC · XRP · USDC via Ethereum · 24 h activation</MethodHint>
+              <MethodName>{t('portal.methods.crypto')}</MethodName>
+              <MethodHint>{t('portal.plans.cryptoHint')}</MethodHint>
             </MethodInfo>
-            <Chevron>›</Chevron>
+            <Chevron>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </Chevron>
           </MethodBtn>
         </MethodList>
       </Sheet>

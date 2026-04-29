@@ -1,123 +1,37 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
+import { useToast } from './ui/Toast';
 import { PaymentMethodSheet } from './portal/PaymentMethodSheet';
 import { CryptoPaymentModal } from './portal/CryptoPaymentModal';
-import type { Plan } from './portal/portal.types';
+import { PLANS } from './portal/portal.data';
+import type { Plan } from './portal.types';
+import { useTranslation } from 'react-i18next';
+import { track } from '../lib/analytics';
+import {
+  PortalWrapper,
+  PortalHeader,
+  SectionLabel,
+  SectionTitle,
+  TwoCol,
+  PlanGrid,
+  FullRow,
+  Card,
+  SubCard,
+  InlineRow,
+  SmBtn,
+  DestructiveBtn,
+  Table,
+  Th,
+  Td,
+  StatusPill,
+  InvoiceRow,
+  TableWrapper,
+  cardAnim
+} from './portal/portal.styled';
+import styled from 'styled-components';
 
-// ─── Layout ────────────────────────────────────────────────────────────────────
-const PortalWrapper = styled.div`
-  padding: 7rem 2rem 4rem;
-  max-width: 1200px;
-  margin: 0 auto;
-
-  @media (max-width: 640px) {
-    padding: 5.5rem 1rem 3rem;
-  }
-`;
-
-const PortalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 1.25rem;
-  margin-bottom: 3rem;
-
-  @media (max-width: 640px) {
-    align-items: flex-start;
-    margin-bottom: 2rem;
-
-    /* Button sits below the title block */
-    button {
-      width: 100%;
-    }
-  }
-`;
-
-const SectionTitle = styled.h3`
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: 0.25rem;
-  letter-spacing: -0.01em;
-`;
-
-const SectionLabel = styled.div`
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-primary);
-  margin-bottom: 1.5rem;
-`;
-
-const TwoCol = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const ThreeCol = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-  margin-bottom: 1.5rem;
-
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const FullRow = styled.div`
-  margin-bottom: 1.5rem;
-`;
-
-// ─── Card ───────────────────────────────────────────────────────────────────────
-const Card = styled(motion.div)`
-  padding: 1.75rem;
-  border: 1px solid var(--glass-border);
-  background: var(--glass-2-bg);
-  backdrop-filter: blur(var(--glass-2-blur));
-  -webkit-backdrop-filter: blur(var(--glass-2-blur));
-  border-radius: var(--radius-xl);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.04);
-  transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
-
-  &:hover {
-    border-color: rgba(202, 138, 4, 0.35);
-    box-shadow: 0 8px 32px rgba(202, 138, 4, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.04);
-  }
-`;
-
-const SubCard = styled.div`
-  padding: 1.75rem;
-  border: 1px solid var(--glass-border);
-  background: var(--glass-1-bg);
-  border-radius: var(--radius-lg);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
-
-  &:hover {
-    border-color: rgba(0, 242, 254, 0.2);
-    box-shadow: 0 4px 24px rgba(0, 242, 254, 0.06);
-  }
-`;
-
-// ─── Form elements ──────────────────────────────────────────────────────────────
+// ─── Local Styled Components (Specific to Portal Dashboard) ───────────────────
 const KeyInput = styled.input`
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -132,39 +46,6 @@ const CustomKeyInput = styled.input`
   background: rgba(0, 0, 0, 0.45);
 `;
 
-const InlineRow = styled.div`
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-
-  input {
-    flex: 1;
-  }
-`;
-
-const SmBtn = styled.button`
-  padding: 0.55rem 1.1rem;
-  font-size: 0.85rem;
-  white-space: nowrap;
-`;
-
-const DestructiveBtn = styled.button`
-  background: transparent;
-  color: #991B1B;
-  border: 1px solid #991B1B;
-  box-shadow: none;
-  padding: 0.55rem 1.1rem;
-  font-size: 0.85rem;
-
-  &:hover:not(:disabled) {
-    background: rgba(153, 27, 27, 0.1);
-    box-shadow: 0 4px 20px -4px rgba(153, 27, 27, 0.4);
-    border-color: #EF4444;
-    color: #EF4444;
-  }
-`;
-
-// ─── Subscription plan card ─────────────────────────────────────────────────────
 const PlanBadge = styled.span<{ $free?: boolean }>`
   display: inline-block;
   padding: 0.2rem 0.65rem;
@@ -198,64 +79,6 @@ const PlanDesc = styled.p`
   color: var(--color-text-dim);
   line-height: 1.5;
   flex: 1;
-`;
-
-// ─── Table ───────────────────────────────────────────────────────────────────────
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.88rem;
-`;
-
-const Th = styled.th`
-  text-align: left;
-  padding: 0.6rem 1rem;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  border-bottom: 1px solid var(--glass-border);
-`;
-
-const Td = styled.td`
-  padding: 0.85rem 1rem;
-  color: var(--color-text-dim);
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  vertical-align: middle;
-
-  &:first-child {
-    color: var(--color-text-muted);
-    font-size: 0.82rem;
-  }
-`;
-
-const StatusPill = styled.span<{ $status: string }>`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.2rem 0.65rem;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: ${p =>
-    p.$status === 'Completed' ? 'rgba(34,197,94,0.1)' :
-      p.$status === 'Pending' ? 'rgba(202,138,4,0.1)' :
-        'rgba(239,68,68,0.1)'
-  };
-  color: ${p =>
-    p.$status === 'Completed' ? '#22C55E' :
-      p.$status === 'Pending' ? '#CA8A04' :
-        '#EF4444'
-  };
-
-  &::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-  }
 `;
 
 // ─── Usage chart ─────────────────────────────────────────────────────────────────
@@ -295,52 +118,12 @@ const BarLabel = styled.span`
   text-align: center;
 `;
 
-// ─── Billing row ─────────────────────────────────────────────────────────────────
-const InvoiceRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  font-size: 0.88rem;
-  color: var(--color-text-dim);
-
-  &:last-child { border-bottom: none; }
-`;
-
 // ─── Mock data ────────────────────────────────────────────────────────────────────
-const PLANS = [
-  {
-    name: 'Early Access',
-    price: 0,
-    desc: 'Community tier. Access the marketplace with limited scribe concurrency and public listings.',
-    sumupUrl: null,
-    free: true,
-  },
-  {
-    name: 'Early Access · ChatGPT',
-    price: 9.99,
-    desc: 'Unlock GPT-4o scribes. Priority queue, extended context window, and commercial usage rights.',
-    sumupUrl: 'https://euler-life.sumupstore.com/product/early-access-to-chatgpt',
-    free: false,
-  },
-  {
-    name: 'Early Access · Claude AI',
-    price: 9.99,
-    desc: 'Unlock Claude Sonnet scribes. Superior reasoning and 200K token documents, fully managed.',
-    sumupUrl: 'https://euler-life.sumupstore.com/product/early-access-to-claude-ai',
-    free: false,
-  },
-  {
-    name: 'Early Access · Perplexity',
-    price: 9.99,
-    desc: 'Real-time web intelligence. Perplexity-powered scribes with live search augmentation.',
-    sumupUrl: 'https://euler-life.sumupstore.com/product/early-access-to-perplexity',
-    free: false,
-  },
+const PURCHASE_HISTORY = [
+  { date: '2026-04-15', product: 'Early Access · Claude AI', amount: '€9.99', status: 'Completed' },
+  { date: '2026-03-15', product: 'Early Access · Claude AI', amount: '€9.99', status: 'Completed' },
+  { date: '2026-02-15', product: 'Early Access · Claude AI', amount: '€9.99', status: 'Completed' },
 ];
-
-const PURCHASE_HISTORY: { date: string; product: string; amount: string; status: string }[] = [];
 
 const USAGE_DATA = [
   { label: 'GPT-4o', pct: 72, color: 'linear-gradient(to top, #00F2FE, #4FACFE)' },
@@ -353,15 +136,16 @@ const USAGE_DATA = [
   { label: 'Week −1', pct: 80, color: 'rgba(255,255,255,0.08)' },
 ];
 
-const INVOICES: { date: string; label: string }[] = [];
+const INVOICES = [
+  { date: '2026-04-16', label: 'Invoice #EULR-2026-004' },
+  { date: '2026-03-16', label: 'Invoice #EULR-2026-003' },
+  { date: '2026-02-16', label: 'Invoice #EULR-2026-002' },
+];
 
 // ─── Component ────────────────────────────────────────────────────────────────────
-const cardAnim = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-};
-
 export const Portal: React.FC = () => {
+  const { t, i18n } = useTranslation();
+  const { toast } = useToast();
   const [accessKey] = useState('EULR-XXXXXXXX-XXXX');
   const [customKey, setCustomKey] = useState('');
   const [keySaved, setKeySaved] = useState(false);
@@ -375,24 +159,66 @@ export const Portal: React.FC = () => {
   const handleSaveKey = () => {
     if (!customKey.trim()) return;
     setKeySaved(true);
+    toast(t('portal.keys.saveSuccess') || 'Custom integration key updated successfully.', 'success');
+    track.event('key_update', { type: 'custom' });
     setTimeout(() => setKeySaved(false), 2000);
   };
 
-  const handleSubscribeClick = (plan: any) => {
-    setSelectedPlan(plan as Plan);
+  const handleRotateKey = () => {
+    toast(t('portal.keys.rotateInitiated') || 'Platform key rotation initiated. New key will be generated shortly.', 'info');
+    track.event('key_rotate', { type: 'platform' });
+  };
+
+  const handleRevokeKey = () => {
+    if (confirm(t('portal.keys.revokeConfirm') || 'Are you sure you want to revoke this platform key? All active scribes using this key will be disconnected.')) {
+      toast(t('portal.keys.revokeInitiated') || 'Platform key revocation initiated.', 'error');
+      track.event('key_revoke', { type: 'platform' });
+    }
+  };
+
+  const handleSubscribeClick = (plan: Plan) => {
+    setSelectedPlan(plan);
     setShowMethodSheet(true);
   };
 
-  const handleSelectCard = () => {
-    if (selectedPlan?.sumupUrl) {
-      window.open(selectedPlan.sumupUrl, '_blank', 'noopener,noreferrer');
-    }
+  const handleSelectCard = async () => {
+    if (!selectedPlan || selectedPlan.free) return;
+    
     setShowMethodSheet(false);
+    
+    const email = auth.currentUser?.email;
+    const name = auth.currentUser?.displayName || 'Visionary Customer';
+    
+    try {
+      toast(t('portal.billing.initiating') || `Initiating secure payment link for ${selectedPlan.name}...`, 'info');
+      
+      const response = await fetch('/api/viva/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: Math.round(selectedPlan.price * 100),
+          customerEmail: email,
+          customerName: name,
+          planName: t(`portal.plans.items.${selectedPlan.id}.name`) || selectedPlan.name,
+          language: i18n.language // Pass current language for the email notification
+        })
+      });
+
+      if (response.ok) {
+        toast(t('portal.billing.linkSent', { email }) || `Payment link sent! Check your inbox: ${email}`, 'success');
+      } else {
+        throw new Error('Failed to create payment order');
+      }
+    } catch (error) {
+      console.error('[Viva] Error:', error);
+      toast(t('portal.billing.error') || 'Could not initiate payment. Please try again or contact support.', 'error');
+    }
   };
 
   const handleSelectBank = () => {
     window.location.href = `mailto:support@euler.life?subject=Invoice Request: ${selectedPlan?.name}&body=Please generate an invoice for the ${selectedPlan?.name} plan. My account email is ${auth.currentUser?.email || ''}`;
     setShowMethodSheet(false);
+    toast(t('portal.billing.redirecting') || 'Redirecting to your email client for invoice request.', 'info');
   };
 
   const handleSelectCrypto = () => {
@@ -406,43 +232,45 @@ export const Portal: React.FC = () => {
         {/* ── Header ── */}
         <PortalHeader>
           <div>
-            <div className="section-label" style={{ marginBottom: '0.5rem' }}>Customer Sanctuary</div>
-            <h2 style={{ marginBottom: '0.35rem' }}>Command Center</h2>
+            <SectionLabel style={{ marginBottom: '0.5rem' }}>
+              {t('portal.label')}
+            </SectionLabel>
+            <h2 style={{ marginBottom: '0.35rem' }}>{t('portal.title')}</h2>
             <p style={{ color: 'var(--color-text-dim)', fontSize: '0.9rem' }}>
               {auth.currentUser?.email}
             </p>
           </div>
-          <button className="btn-secondary" onClick={handleLogout}>Terminate Session</button>
+          <button className="btn-secondary" onClick={handleLogout}>{t('portal.logout')}</button>
         </PortalHeader>
 
         {/* ── Row 1: Access Keys ── */}
         <FullRow>
-          <SectionLabel>Access Keys</SectionLabel>
+          <SectionLabel>{t('portal.keys.label')}</SectionLabel>
           <Card {...cardAnim} transition={{ duration: 0.4 }}>
-            <SectionTitle>API Integration</SectionTitle>
+            <SectionTitle>{t('portal.keys.title')}</SectionTitle>
             <p style={{ color: 'var(--color-text-dim)', fontSize: '0.88rem', marginBottom: '1rem' }}>
-              Your read-only market key. Paste a custom integration key from your AI provider below to link scribes directly to your account.
+              {t('portal.keys.description')}
             </p>
             <label style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.35rem', display: 'block' }}>
-              Platform Key
+              {t('portal.keys.platformKey')}
             </label>
             <InlineRow style={{ marginBottom: '1.25rem' }}>
               <KeyInput type="text" value={accessKey} readOnly />
-              <SmBtn>Rotate</SmBtn>
-              <DestructiveBtn>Revoke</DestructiveBtn>
+              <SmBtn onClick={handleRotateKey}>{t('portal.keys.rotate')}</SmBtn>
+              <DestructiveBtn onClick={handleRevokeKey}>{t('portal.keys.revoke')}</DestructiveBtn>
             </InlineRow>
             <label style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.35rem', display: 'block' }}>
-              Custom Integration Key
+              {t('portal.keys.customKey')}
             </label>
             <InlineRow>
               <CustomKeyInput
                 type="text"
-                placeholder="Paste your provider API key here (e.g. sk-...)"
+                placeholder={t('portal.keys.customKeyPlaceholder')}
                 value={customKey}
                 onChange={e => setCustomKey(e.target.value)}
               />
               <SmBtn onClick={handleSaveKey} disabled={!customKey.trim()}>
-                {keySaved ? '✓ Saved' : 'Save'}
+                {keySaved ? t('portal.keys.saved') : t('portal.keys.save')}
               </SmBtn>
             </InlineRow>
           </Card>
@@ -450,74 +278,80 @@ export const Portal: React.FC = () => {
 
         {/* ── Row 2: Subscriptions ── */}
         <FullRow>
-          <SectionLabel>Available Subscriptions</SectionLabel>
-          <ThreeCol>
+          <SectionLabel>{t('portal.plans.label')}</SectionLabel>
+          <PlanGrid>
             {PLANS.map(plan => (
-              <SubCard key={plan.name}>
-                <PlanBadge $free={plan.free}>{plan.free ? 'Free' : 'Pro'}</PlanBadge>
-                <SectionTitle style={{ fontSize: '0.95rem' }}>{plan.name}</SectionTitle>
+              <SubCard key={plan.id}>
+                <PlanBadge $free={plan.free}>{plan.free ? t('portal.plans.free') : t('portal.plans.pro')}</PlanBadge>
+                <SectionTitle style={{ fontSize: '0.95rem' }}>
+                  {t(`portal.plans.items.${plan.id}.name`)}
+                </SectionTitle>
                 <PriceText>
-                  {plan.free ? 'Free' : <>€{plan.price.toFixed(2)}<span>/mo</span></>}
+                  {plan.free ? t('portal.plans.free') : <>€{plan.price.toFixed(2)}<span>{t('portal.plans.perMonth')}</span></>}
                 </PriceText>
-                <PlanDesc>{plan.desc}</PlanDesc>
-                {plan.sumupUrl ? (
+                <PlanDesc>
+                  {t(`portal.plans.items.${plan.id}.desc`)}
+                </PlanDesc>
+                {!plan.free ? (
                   <button 
                     onClick={() => handleSubscribeClick(plan)}
                     style={{ width: '100%', padding: '0.6rem', fontSize: '0.85rem' }}
                   >
-                    Subscribe
+                    {t('portal.plans.subscribe')}
                   </button>
                 ) : (
                   <button style={{ width: '100%', padding: '0.6rem', fontSize: '0.85rem', opacity: 0.5, cursor: 'default' }} disabled>
-                    Current Plan
+                    {t('portal.plans.currentPlan')}
                   </button>
                 )}
               </SubCard>
             ))}
-          </ThreeCol>
+          </PlanGrid>
         </FullRow>
 
         {/* ── Row 3: Purchase History + Billing ── */}
         <TwoCol>
           <Card {...cardAnim} transition={{ duration: 0.4, delay: 0.05 }}>
-            <SectionLabel>Purchase History</SectionLabel>
-            <Table>
-              <thead>
-                <tr>
-                  <Th>Date</Th>
-                  <Th>Product</Th>
-                  <Th>Amount</Th>
-                  <Th>Status</Th>
-                </tr>
-              </thead>
-              <tbody>
-                {PURCHASE_HISTORY.length === 0 ? (
+            <SectionLabel>{t('portal.history.label')}</SectionLabel>
+            <TableWrapper>
+              <Table>
+                <thead>
                   <tr>
-                    <Td colSpan={4} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>
-                      No purchases yet. Subscribe to a plan above to get started.
-                    </Td>
+                    <Th>{t('portal.history.date')}</Th>
+                    <Th>{t('portal.history.product')}</Th>
+                    <Th>{t('portal.history.amount')}</Th>
+                    <Th>{t('portal.history.status')}</Th>
                   </tr>
-                ) : (
-                  PURCHASE_HISTORY.map((row, i) => (
-                    <tr key={i}>
-                      <Td>{row.date}</Td>
-                      <Td style={{ color: 'var(--color-text)' }}>{row.product}</Td>
-                      <Td>{row.amount}</Td>
-                      <Td>
-                        <StatusPill $status={row.status}>{row.status}</StatusPill>
+                </thead>
+                <tbody>
+                  {PURCHASE_HISTORY.length === 0 ? (
+                    <tr>
+                      <Td colSpan={4} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>
+                        {t('portal.history.empty')}
                       </Td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </Table>
+                  ) : (
+                    PURCHASE_HISTORY.map((row, i) => (
+                      <tr key={i}>
+                        <Td>{row.date}</Td>
+                        <Td style={{ color: 'var(--color-text)' }}>{row.product}</Td>
+                        <Td>{row.amount}</Td>
+                        <Td>
+                          <StatusPill $status={row.status}>{row.status}</StatusPill>
+                        </Td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </Table>
+            </TableWrapper>
           </Card>
 
           <Card {...cardAnim} transition={{ duration: 0.4, delay: 0.1 }}>
-            <SectionLabel>Billing &amp; Invoices</SectionLabel>
+            <SectionLabel>{t('portal.billing.label')}</SectionLabel>
             {INVOICES.length === 0 ? (
               <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', padding: '1.5rem 0', textAlign: 'center' }}>
-                No invoices yet. Invoices are generated automatically 24h after each successful payment.
+                {t('portal.billing.empty')}
               </p>
             ) : (
               INVOICES.map((inv, i) => (
@@ -529,7 +363,7 @@ export const Portal: React.FC = () => {
                     onClick={e => e.preventDefault()}
                     style={{ color: 'var(--color-primary)', fontSize: '0.82rem', textDecoration: 'none', flexShrink: 0 }}
                   >
-                    ↓ PDF
+                    {t('portal.billing.download')}
                   </a>
                 </InvoiceRow>
               ))
@@ -540,8 +374,8 @@ export const Portal: React.FC = () => {
         {/* ── Row 4: Usage Chart ── */}
         <FullRow>
           <Card {...cardAnim} transition={{ duration: 0.4, delay: 0.15 }}>
-            <SectionLabel>API Usage · Per Scribe</SectionLabel>
-            <SectionTitle>Monthly call distribution by provider</SectionTitle>
+            <SectionLabel>{t('portal.usage.label')}</SectionLabel>
+            <SectionTitle>{t('portal.usage.title')}</SectionTitle>
             <div style={{ opacity: 0.25, pointerEvents: 'none', userSelect: 'none' }}>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', overflowX: 'auto', paddingBottom: '0.5rem' }}>
                 {USAGE_DATA.map((bar, i) => (
@@ -561,7 +395,7 @@ export const Portal: React.FC = () => {
               </div>
             </div>
             <p style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '1rem' }}>
-              Telemetry activates once your first scribe is initialised.
+              {t('portal.usage.inactive')}
             </p>
           </Card>
         </FullRow>

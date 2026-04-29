@@ -1,4 +1,7 @@
 {
+  "common": {
+    "close": "Cerrar"
+  },
   "nav": {
     "marketplace": "Mercado",
     "support": "Soporte",
@@ -81,7 +84,7 @@
     "noAccount": "¿No tienes un nodo?",
     "haveAccount": "¿Ya estás registrado?",
     "initHere": "Inicializa aquí",
-    "authHere": "Autentícate aquí"
+    "authHere": "Auténticate aquí"
   },
   "portal": {
     "label": "Santuario del Cliente",
@@ -97,7 +100,11 @@
       "rotate": "Rotar",
       "revoke": "Revocar",
       "save": "Guardar",
-      "saved": "✓ Guardado"
+      "saved": "✓ Guardado",
+      "saveSuccess": "Clave de integración personalizada actualizada con éxito.",
+      "rotateInitiated": "Rotación de clave de plataforma iniciada. Se generará una nueva clave en breve.",
+      "revokeConfirm": "¿Estás seguro de que deseas revocar esta clave de plataforma? Todos los escribas activos que usan esta clave se desconectarán.",
+      "revokeInitiated": "Revocación de clave de plataforma iniciada."
     },
     "plans": {
       "label": "Suscripciones Disponibles",
@@ -105,7 +112,28 @@
       "pro": "Pro",
       "subscribe": "Suscribirse",
       "currentPlan": "Plan Actual",
-      "perMonth": "/mes"
+      "perMonth": "/mes",
+      "secureLinkHint": "Visa, Mastercard · Link seguro enviado por email",
+      "bankTransferHint": "Reciba una factura por email · 1–3 días hábiles",
+      "cryptoHint": "BTC · XRP · USDC vía Ethereum · Activación en 24h",
+      "items": {
+        "early_access": {
+          "name": "Acceso Anticipado",
+          "desc": "Nivel comunitario. Accede al mercado con concurrencia limitada de escribas y listados públicos."
+        },
+        "gpt4o": {
+          "name": "Acceso Anticipado · ChatGPT",
+          "desc": "Desbloquea escribas GPT-4o. Cola prioritaria, ventana de contexto extendida y derechos de uso comercial."
+        },
+        "claude": {
+          "name": "Acceso Anticipado · Claude AI",
+          "desc": "Desbloquea escribas Claude Sonnet. Razonamiento superior y documentos de 200K tokens, totalmente gestionado."
+        },
+        "perplexity": {
+          "name": "Acceso Anticipado · Perplexity",
+          "desc": "Inteligencia web en tiempo real. Escribas potenciados por Perplexity con búsqueda en vivo aumentada."
+        }
+      }
     },
     "history": {
       "label": "Historial de Compras",
@@ -118,12 +146,42 @@
     "billing": {
       "label": "Facturación & Facturas",
       "empty": "Sin facturas aún. Las facturas se generan automáticamente 24h después de cada pago exitoso.",
-      "download": "↓ PDF"
+      "download": "↓ PDF",
+      "initiating": "Iniciando enlace de pago seguro para {{planName}}...",
+      "linkSent": "¡Enlace de pago enviado! Revisa tu bandeja de entrada: {{email}}",
+      "error": "No se pudo iniciar el pago. Por favor, inténtalo de nuevo o contacta con soporte.",
+      "redirecting": "Redirigiendo a tu cliente de email para la solicitud de factura."
     },
     "usage": {
       "label": "Uso de API · Por Escriba",
       "title": "Distribución mensual de llamadas por proveedor",
       "inactive": "La telemetría se activa cuando tu primer escriba sea inicializado."
+    },
+    "methods": {
+      "title": "Elija el Método de Pago",
+      "subtitle": "Seleccione cómo desea suscribirse",
+      "card": "Tarjeta de Crédito / Débito",
+      "bank": "Transferencia Bancaria",
+      "crypto": "Criptomoneda"
+    },
+    "crypto": {
+      "title": "Pagar con Criptomoneda",
+      "subtitle": "Envía el importe exacto a la dirección de abajo",
+      "walletLabel": "Dirección {{label}} ({{ticker}})",
+      "copy": "Copiar",
+      "copied": "✓ Copiado",
+      "proofLabel": "Enviar Comprobante de Pago",
+      "proofPlaceholder": "Introduce el Hash de la Transacción (TxID)",
+      "submit": "Enviar",
+      "sending": "Enviando...",
+      "success": "✓ Comprobante enviado con éxito. El acceso se concederá en 24 horas.",
+      "error": "Error al enviar. Por favor, envíanos un email a support@euler.life",
+      "notes": {
+        "btc": "Native SegWit (bech32). Mínimo 0.00001 BTC.",
+        "xrp": "XRP Ledger. No se requiere Tag de Destino.",
+        "usdc": "ERC-20 solo en la red principal de Ethereum. No envíes desde otras redes."
+      },
+      "walletAddressLabel": "Dirección {{label}} ({{ticker}})"
     }
   }
 }

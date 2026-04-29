@@ -1,10 +1,10 @@
 // ─── Shared types for Portal sub-components ───────────────────────────────────
 
 export interface Plan {
+  id: string;
   name: string;
   price: number;
   desc: string;
-  sumupUrl: string | null;
   free: boolean;
 }
 

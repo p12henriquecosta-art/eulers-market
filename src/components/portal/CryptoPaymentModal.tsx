@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import type { Plan } from './portal.types';
 import { collection, addDoc } from 'firebase/firestore';
 import { db, auth } from '../../firebase';
+import { useTranslation } from 'react-i18next';
 
 // ─── Wallet registry ──────────────────────────────────────────────────────────
 const WALLETS = [
@@ -20,7 +21,6 @@ const WALLETS = [
         <text x="50%" y="56%" dominantBaseline="middle" textAnchor="middle" fill="#F7931A" fontSize="18" fontWeight="700">₿</text>
       </svg>
     ),
-    note: 'Native SegWit (bech32). Minimum 0.00001 BTC.',
   },
   {
     id: 'xrp',
@@ -35,7 +35,6 @@ const WALLETS = [
         <text x="50%" y="56%" dominantBaseline="middle" textAnchor="middle" fill="#00AAE4" fontSize="13" fontWeight="700">XRP</text>
       </svg>
     ),
-    note: 'XRP Ledger. No destination tag required.',
   },
   {
     id: 'usdc',
@@ -50,7 +49,6 @@ const WALLETS = [
         <text x="50%" y="56%" dominantBaseline="middle" textAnchor="middle" fill="#2775CA" fontSize="11" fontWeight="700">USDC</text>
       </svg>
     ),
-    note: 'ERC-20 on Ethereum Mainnet only. Do not send from other chains.',
   },
 ];
 
@@ -352,6 +350,7 @@ interface Props {
 }
 
 export const CryptoPaymentModal: React.FC<Props> = ({ plan, onClose }) => {
+  const { t } = useTranslation();
   const [activeId, setActiveId] = useState('btc');
   const [copied, setCopied] = useState(false);
   const [txHash, setTxHash] = useState('');
@@ -373,8 +372,6 @@ export const CryptoPaymentModal: React.FC<Props> = ({ plan, onClose }) => {
     setStatus('loading');
 
     try {
-      // In production, user will be logged in if they are on this portal.
-      // But we check just to be safe.
       const user = auth.currentUser;
       
       await addDoc(collection(db, 'crypto_payments'), {
@@ -395,10 +392,8 @@ export const CryptoPaymentModal: React.FC<Props> = ({ plan, onClose }) => {
     }
   };
 
-  // Reset copy state when tab changes
   useEffect(() => { setCopied(false); }, [activeId]);
 
-  // Close on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', handler);
@@ -410,10 +405,10 @@ export const CryptoPaymentModal: React.FC<Props> = ({ plan, onClose }) => {
       <Modal onClick={e => e.stopPropagation()}>
         <ModalHeader>
           <div>
-            <ModalTitle>Pay with Cryptocurrency</ModalTitle>
-            <ModalSubtitle>Send the exact amount to the address below</ModalSubtitle>
+            <ModalTitle>{t('portal.crypto.title')}</ModalTitle>
+            <ModalSubtitle>{t('portal.crypto.subtitle')}</ModalSubtitle>
           </div>
-          <CloseBtn onClick={onClose} aria-label="Close">✕</CloseBtn>
+          <CloseBtn onClick={onClose} aria-label={t('common.close') || 'Close'}>✕</CloseBtn>
         </ModalHeader>
 
         <TabRow>
@@ -434,26 +429,28 @@ export const CryptoPaymentModal: React.FC<Props> = ({ plan, onClose }) => {
         <Body>
           <PlanTag>
             <span>◈</span>
-            {plan.name} · €{plan.price.toFixed(2)}/mo
+            {t(`portal.plans.items.${plan.id}.name`)} · €{plan.price.toFixed(2)}{t('portal.plans.perMonth')}
           </PlanTag>
 
           <WalletBox $color={wallet.color} $glow={wallet.glow}>
-            <WalletLabel>{wallet.label} ({wallet.ticker}) Address</WalletLabel>
+            <WalletLabel>
+              {t('portal.crypto.walletAddressLabel', { label: wallet.label, ticker: wallet.ticker })}
+            </WalletLabel>
             <AddressRow>
               <Address>{wallet.address}</Address>
               <CopyBtn
                 $copied={copied}
                 $color={wallet.color}
                 onClick={handleCopy}
-                aria-label="Copy wallet address"
+                aria-label={t('portal.crypto.copy')}
               >
-                {copied ? '✓ Copied' : 'Copy'}
+                {copied ? t('portal.crypto.copied') : t('portal.crypto.copy')}
               </CopyBtn>
             </AddressRow>
           </WalletBox>
 
           <Note $color={wallet.color}>
-            ⚠ {wallet.note}
+            ⚠ {t(`portal.crypto.notes.${wallet.id}`)}
           </Note>
 
           <Divider />
@@ -461,26 +458,26 @@ export const CryptoPaymentModal: React.FC<Props> = ({ plan, onClose }) => {
           <ProofSection>
             {status === 'success' ? (
               <SuccessState>
-                ✓ Proof submitted successfully. Access will be granted within 24 hours.
+                {t('portal.crypto.success')}
               </SuccessState>
             ) : (
               <>
-                <ProofLabel>Submit Proof of Payment</ProofLabel>
+                <ProofLabel>{t('portal.crypto.proofLabel')}</ProofLabel>
                 <ProofInputRow onSubmit={handleSubmitProof}>
                   <ProofInput 
-                    placeholder="Enter Transaction Hash (TxID)" 
+                    placeholder={t('portal.crypto.proofPlaceholder')} 
                     value={txHash}
                     onChange={e => setTxHash(e.target.value)}
                     disabled={status === 'loading'}
                     required
                   />
                   <SubmitBtn type="submit" disabled={status === 'loading' || !txHash.trim()}>
-                    {status === 'loading' ? 'Sending...' : 'Submit'}
+                    {status === 'loading' ? t('portal.crypto.sending') : t('portal.crypto.submit')}
                   </SubmitBtn>
                 </ProofInputRow>
                 {status === 'error' && (
                   <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-                    Failed to submit. Please email us at support@euler.life
+                    {t('portal.crypto.error')}
                   </p>
                 )}
               </>
