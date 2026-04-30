@@ -81,6 +81,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(response.status).json({
         error: 'Viva API error',
         status: response.status,
+        vivaUrl: vivaUrl,
+        merchantIdPrefix: VIVA_MERCHANT_ID ? VIVA_MERCHANT_ID.substring(0, 5) : 'MISSING',
         message: data.message || data.rawBody || `Viva returned HTTP ${response.status}`
       });
     }
