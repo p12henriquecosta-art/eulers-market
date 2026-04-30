@@ -1,5 +1,4 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import axios from 'axios';
 
 /**
  * Viva Payments API - Create Payment Order with Basic Auth
@@ -43,9 +42,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
     const requestLang = langMap[language] || 'en-GB';
 
-    const response = await axios.post(
-      `${VIVA_API_URL}/checkout/v2/orders`,
-      {
+    const response = await fetch(`${VIVA_API_URL}/checkout/v2/orders`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
         amount: amount,
         customer: {
           email: customerEmail,
@@ -56,16 +59,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         customerTrns: `Euler Market: ${planName}`,
         merchantTrns: `EULR-ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         sourceCode: SOURCE_CODE,
-      },
-      {
-        headers: {
-          'Authorization': `Basic ${auth}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+      })
+    });
 
-    const data = response.data;
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('[Viva API] Error response from Viva:', data);
+      return res.status(response.status).json({
+        error: 'Viva API error',
+        message: data.message || 'Error from Viva API'
+      });
+    }
 
     // Success! Viva will now handle the email sending.
     return res.status(200).json({ 
@@ -74,13 +79,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
   } catch (error: any) {
-    console.error('[Viva API] Error:', error.response?.data || error.message);
-    const status = error.response?.status || 500;
-    const message = error.response?.data?.message || error.message || 'Internal server error';
-    
-    return res.status(status).json({ 
-      error: 'Viva API error', 
-      message 
+    console.error('[Viva API] Error:', error);
+    return res.status(500).json({ 
+      error: 'Internal server error', 
+      message: error.message 
     });
   }
 }
