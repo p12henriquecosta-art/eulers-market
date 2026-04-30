@@ -5,7 +5,7 @@ import { useToast } from './ui/Toast';
 import { PaymentMethodSheet } from './portal/PaymentMethodSheet';
 import { CryptoPaymentModal } from './portal/CryptoPaymentModal';
 import { PLANS } from './portal/portal.data';
-import type { Plan } from './portal.types';
+import type { Plan } from './portal/portal.types';
 import { useTranslation } from 'react-i18next';
 import { track } from '../lib/analytics';
 import {

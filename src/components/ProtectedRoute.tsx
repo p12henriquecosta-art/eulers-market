@@ -70,5 +70,10 @@ const PortalSkeleton: React.FC = () => (
   </div>
 );
 export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) return <PortalSkeleton />;
+  if (!user) return <Navigate to="/" replace />;
+  
   return <>{children}</>;
 };

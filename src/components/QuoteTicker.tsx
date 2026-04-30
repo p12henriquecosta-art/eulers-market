@@ -1,6 +1,9 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { track } from '../lib/analytics';
+import { PLANS } from './portal/portal.data';
+import { VivaOrderModal } from './portal/VivaOrderModal';
+import { AnimatePresence } from 'framer-motion';
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 interface Quote {
@@ -109,7 +112,8 @@ const Section = styled.section`
   border-top: 1px solid rgba(0, 242, 254, 0.08);
   border-bottom: 1px solid rgba(0, 242, 254, 0.08);
   background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
   /* Edge fade masks */
   &::before,
@@ -272,6 +276,70 @@ const CTAHeading = styled.h3`
   }
 `;
 
+const ProductGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto 2.5rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+`;
+
+const ProductCard = styled.div`
+  background: var(--glass-1-bg);
+  backdrop-filter: blur(var(--glass-1-blur));
+  -webkit-backdrop-filter: blur(var(--glass-1-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  text-align: left;
+  transition: all 0.3s var(--ease-out);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  &:hover {
+    background: var(--glass-2-bg);
+    border-color: var(--glass-border-gold);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  }
+  
+  h4 {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #CA8A04;
+    
+    span {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      font-weight: 400;
+      margin-left: 4px;
+    }
+  }
+
+  p {
+    font-size: 0.78rem;
+    color: var(--color-text-dim);
+    line-height: 1.5;
+    margin: 0;
+  }
+`;
+
 const CTARow = styled.div`
   display: flex;
   align-items: center;
@@ -298,11 +366,18 @@ const BadgeLogo: React.FC<{ quote: Quote }> = ({ quote }) => {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export const QuoteTicker: React.FC = () => {
+  const [selectedPlan, setSelectedPlan] = React.useState<any>(null);
+  
   // Duplicate the array so the marquee loops seamlessly
   const doubled = [...QUOTES, ...QUOTES];
 
   const handleClick = (q: Quote) => {
     track.quoteTickerClicked({ company: q.company, href: q.href });
+  };
+
+  const handlePlanClick = (plan: any) => {
+    setSelectedPlan(plan);
+    track.event('plan_card_clicked', { plan: plan.id });
   };
 
   return (
@@ -342,6 +417,20 @@ export const QuoteTicker: React.FC = () => {
           Don't let your premium compute go to waste.<br />
           <em>Liquidate or access top-tier intelligence</em> on Euler's Market.
         </CTAHeading>
+
+        <ProductGrid>
+          {PLANS.filter(p => !p.free).map(plan => (
+            <ProductCard key={plan.id} onClick={() => handlePlanClick(plan)}>
+              <h4>{plan.name}</h4>
+              <div className="price">€{plan.price.toFixed(2)}<span>/mo</span></div>
+              <p>{plan.desc}</p>
+              <div style={{ marginTop: 'auto', paddingTop: '0.5rem', color: '#CA8A04', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                Secure Link →
+              </div>
+            </ProductCard>
+          ))}
+        </ProductGrid>
+
         <CTARow>
           <a
             href="#waitlist"
@@ -350,16 +439,18 @@ export const QuoteTicker: React.FC = () => {
           >
             <button>Request Early Access</button>
           </a>
-          <a
-            href="https://euler-life.sumupstore.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: 'none' }}
-          >
-            <button className="btn-secondary">Browse Plans →</button>
-          </a>
         </CTARow>
       </CTABanner>
+
+      <AnimatePresence>
+        {selectedPlan && (
+          <VivaOrderModal 
+            plan={selectedPlan} 
+            onClose={() => setSelectedPlan(null)} 
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };
+

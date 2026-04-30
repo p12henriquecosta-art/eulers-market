@@ -111,4 +111,9 @@ export const track = {
   quoteTickerClicked(params: { company: string; href: string }): void {
     gtag('quote_ticker_clicked', params);
   },
+
+  // ── Generic event (used for ad-hoc tracking) ──────────────────────────────
+  event(eventName: string, params?: Record<string, unknown>): void {
+    gtag(eventName, params);
+  },
 };
