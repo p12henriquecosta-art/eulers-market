@@ -32,7 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     console.log(`[Viva API] Creating order for ${customerEmail} - ${amount} cents`);
 
-    const auth = Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString("base64");
+    const auth = Buffer.from(`${MERCHANT_ID?.trim()}:${API_KEY?.trim()}`).toString("base64");
 
     // Map application language to Viva supported languages
     const langMap: Record<string, string> = {
@@ -82,7 +82,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         error: 'Viva API error',
         status: response.status,
         vivaUrl: vivaUrl,
-        merchantIdPrefix: MERCHANT_ID ? MERCHANT_ID.substring(0, 5) : 'MISSING',
+        merchantIdPrefix: MERCHANT_ID ? MERCHANT_ID.trim().substring(0, 5) : 'MISSING',
+        apiKeyLength: API_KEY ? API_KEY.trim().length : 0,
         message: data.message || data.rawBody || `Viva returned HTTP ${response.status}`
       });
     }
