@@ -42,7 +42,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
     const requestLang = langMap[language] || 'en-GB';
 
-    const response = await fetch(`${VIVA_API_URL}/checkout/v2/orders`, {
+    const vivaUrl = `${VIVA_API_URL}/checkout/v2/orders`;
+    console.log(`[Viva API] Posting to: ${vivaUrl}`);
+
+    const response = await fetch(vivaUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${auth}`,
@@ -62,13 +65,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       })
     });
 
-    const data = await response.json();
+    // Safely parse response — Viva may return empty body on auth failures
+    const responseText = await response.text();
+    console.log(`[Viva API] Status: ${response.status}, Body: ${responseText.substring(0, 500)}`);
+
+    let data: any;
+    try {
+      data = responseText ? JSON.parse(responseText) : {};
+    } catch {
+      data = { rawBody: responseText };
+    }
 
     if (!response.ok) {
       console.error('[Viva API] Error response from Viva:', data);
       return res.status(response.status).json({
         error: 'Viva API error',
-        message: data.message || 'Error from Viva API'
+        status: response.status,
+        message: data.message || data.rawBody || `Viva returned HTTP ${response.status}`
       });
     }
 
