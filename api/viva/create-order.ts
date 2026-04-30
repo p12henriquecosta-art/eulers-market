@@ -2,36 +2,17 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import axios from 'axios';
 
 /**
- * Viva Payments API - Create Payment Order with OAuth2
+ * Viva Payments API - Create Payment Order with Basic Auth
  * This serverless function handles the secure creation of a payment order
  * and triggers an automatic email notification to the customer.
  */
 
 // Configuration
+// Use demo or prod URL based on environment.
 const VIVA_API_URL = process.env.VIVA_API_URL || "https://demo-api.vivapayments.com";
-const VIVA_ACCOUNTS_URL = process.env.VIVA_ACCOUNTS_URL || "https://demo-accounts.vivapayments.com";
-const CLIENT_ID = process.env.VIVA_CLIENT_ID;
-const CLIENT_SECRET = process.env.VIVA_CLIENT_SECRET;
+const MERCHANT_ID = process.env.VIVA_MERCHANT_ID;
+const API_KEY = process.env.VIVA_API_KEY;
 const SOURCE_CODE = process.env.VIVA_SOURCE_CODE || "Default";
-
-async function getAccessToken(): Promise<string> {
-  if (!CLIENT_ID || !CLIENT_SECRET) {
-    throw new Error("VIVA_CLIENT_ID and VIVA_CLIENT_SECRET environment variables are required");
-  }
-
-  const auth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
-  const response = await axios.post(
-    `${VIVA_ACCOUNTS_URL}/connect/token`,
-    "grant_type=client_credentials",
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": `Basic ${auth}`
-      }
-    }
-  );
-  return response.data.access_token;
-}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -44,10 +25,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Missing required payment data' });
   }
 
+  if (!MERCHANT_ID || !API_KEY) {
+    console.error('[Viva API] Missing VIVA_MERCHANT_ID or VIVA_API_KEY');
+    return res.status(500).json({ error: 'Server misconfiguration: Missing Viva Wallet credentials' });
+  }
+
   try {
     console.log(`[Viva API] Creating order for ${customerEmail} - ${amount} cents`);
 
-    const token = await getAccessToken();
+    const auth = Buffer.from(`${MERCHANT_ID}:${API_KEY}`).toString("base64");
 
     // Map application language to Viva supported languages
     const langMap: Record<string, string> = {
@@ -73,7 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
       {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Basic ${auth}`,
           'Content-Type': 'application/json'
         }
       }

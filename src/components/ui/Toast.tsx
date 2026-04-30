@@ -31,7 +31,7 @@ const Container = styled.div`
   position: fixed;
   bottom: 1.75rem;
   right: 1.75rem;
-  z-index: 9999;
+  z-index: 10000;
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
